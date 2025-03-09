@@ -25,3 +25,15 @@ with open(filename, 'w') as csvfile:
     # writing the data rows  
     csvwriter.writerows(rows)
 
+class Customer:
+    def __init__(self, account_id, first_name, last_name, password):
+        self.account_id = account_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.password = password
+
+class Account:
+    def __init__(self, account_id, balance_checking, balance_savings):
+        self.account_id = account_id
+        self.balance_checking = balance_checking
+        self.balance_savings = balance_savings
