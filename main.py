@@ -25,4 +25,3 @@ with open(filename, 'w') as csvfile:
     # writing the data rows  
     csvwriter.writerows(rows)
 
-    
