@@ -1,21 +1,19 @@
-import csv  
-
 # Writing data to CSV file, from: https://www.geeksforgeeks.org/reading-and-writing-csv-files-in-python/
+import csv  
+# name of csv file  
+my_csv_file = "bank.csv"
 # field names  
 fields = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings']  
-    
+
 # data rows of csv file  
 rows = [ [10001, 'suresh', 'sigera', 'juagw362', 1000, 10000],  
         [10002, 'james', 'taylor', 'idh36%@#FGd', 10000, 10000],  
         [10003, 'melvin', 'gordon', 'uYWE732g4ga1', 2000, 20000],  
         [10004, 'stacey', 'abrams', 'DEU8_qw3y72$', 2000, 20000],  
         [10005, 'jake', 'paul', 'd^dg23g)@', 100000, 100000]]  
-    
-# name of csv file  
-filename = "bank.csv"
-    
+
 # writing to csv file  
-with open(filename, 'w') as csvfile:  
+with open(my_csv_file, mode ='w') as csvfile:  
     # creating a csv writer object  
     csvwriter = csv.writer(csvfile)  
         
@@ -26,28 +24,43 @@ with open(filename, 'w') as csvfile:
     csvwriter.writerows(rows)
 
 class Customer:
-    def __init__(self, account_id, first_name, last_name, password):
-        self.account_id = account_id
+
+    new_id = 0
+    
+    def __init__(self, first_name, last_name, password):
         self.first_name = first_name
         self.last_name = last_name
         self.password = password
 
-    def add_customer_to_csv(self, balance_checking=0, balance_savings=0, filename='bank.csv'):
-        new_customer = [self.account_id, #create list
+    def create_customer_id(self):
+        number_of_existing_customers = 0 # initialize variable
+        with open(my_csv_file, mode ='r') as csvfile:
+            content = csv.reader(csvfile)
+            next(content)  # skip the header row (first row)
+            for lines in content: # rows loop
+                if lines:  # if the file is not empty
+                    number_of_existing_customers += 1  # increment for each existing customer
+        
+        new_id = 10001 + number_of_existing_customers # generate new ID according to existing customers
+        return new_id
+
+    def add_customer_to_csv(self, balance_checking=0, balance_savings=0):
+        # create list
+        new_customer = [self.create_customer_id(), 
                         self.first_name,
                         self.last_name,
                         self.password,
                         balance_checking,
                         balance_savings]
         
-        with open(filename, 'a') as csvfile:  # 'a' stands for append
+        with open(my_csv_file, 'a') as csvfile:  # 'a' stands for append
             # creating a csv writer object  
             csvwriter = csv.writer(csvfile)  
             # writing the data row
             csvwriter.writerow(new_customer)
 
 # just testing my function here
-customer = Customer('10006', 'Ghada', 'Almutairi', 'GH124')
+customer = Customer('Ghada', 'Almutairi', 'GH124')
 customer.add_customer_to_csv()
 
 # class Account:
