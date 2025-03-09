@@ -1,6 +1,6 @@
 import csv  
 
-# from: https://www.geeksforgeeks.org/reading-and-writing-csv-files-in-python/
+# Writing data to CSV file, from: https://www.geeksforgeeks.org/reading-and-writing-csv-files-in-python/
 # field names  
 fields = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings']  
     
@@ -32,8 +32,26 @@ class Customer:
         self.last_name = last_name
         self.password = password
 
-class Account:
-    def __init__(self, account_id, balance_checking, balance_savings):
-        self.account_id = account_id
-        self.balance_checking = balance_checking
-        self.balance_savings = balance_savings
+    def add_customer_to_csv(self, balance_checking=0, balance_savings=0, filename='bank.csv'):
+        new_customer = [self.account_id, #create list
+                        self.first_name,
+                        self.last_name,
+                        self.password,
+                        balance_checking,
+                        balance_savings]
+        
+        with open(filename, 'a') as csvfile:  # 'a' stands for append
+            # creating a csv writer object  
+            csvwriter = csv.writer(csvfile)  
+            # writing the data row
+            csvwriter.writerow(new_customer)
+
+# just testing my function here
+customer = Customer('10006', 'Ghada', 'Almutairi', 'GH124')
+customer.add_customer_to_csv()
+
+# class Account:
+#     def __init__(self, account_id, balance_checking, balance_savings):
+#         self.account_id = account_id
+#         self.balance_checking = balance_checking
+#         self.balance_savings = balance_savings
