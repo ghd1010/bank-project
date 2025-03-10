@@ -22,8 +22,8 @@ class TestCustomer(unittest.TestCase):
             self.assertFalse(self.test_customer.balance_checking.withdraw(50), 150) # withdraw from savings
             self.assertFalse(self.test_customer.balance_savings.withdraw(50), 100) # withdraw from checking
 
-            self.assertFalse(self.test_customer_two.balance_checking.withdraw(100), -35.0) # overdraft
-
+            self.assertFalse(self.test_customer_two.balance_checking.withdraw(100), -35.0) # overdraft in checking
+            self.assertFalse(self.test_customer_two.balance_savings.withdraw(100), -35.0) # overdraft in savings
 
 
 
