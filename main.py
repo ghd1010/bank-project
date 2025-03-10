@@ -3,14 +3,14 @@ import csv
 # name of csv file  
 my_csv_file = "bank.csv"
 # field names  
-fields = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings']  
+fields = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings','num_of_overdrafts', 'is_active']  
 
 # data rows of csv file  
-rows = [[10001, 'suresh', 'sigera', 'juagw362', 1000, 10000],  
-        [10002, 'james', 'taylor', 'idh36%@#FGd', 10000, 10000],  
-        [10003, 'melvin', 'gordon', 'uYWE732g4ga1', 2000, 20000],  
-        [10004, 'stacey', 'abrams', 'DEU8_qw3y72$', 2000, 20000],  
-        [10005, 'jake', 'paul', 'd^dg23g)@', 100000, 100000]]  
+rows = [[10001, 'suresh', 'sigera', 'juagw362', 1000, 10000, 0, True],  
+        [10002, 'james', 'taylor', 'idh36%@#FGd', 10000, 10000, 0, True],  
+        [10003, 'melvin', 'gordon', 'uYWE732g4ga1', 2000, 20000, 0, True],  
+        [10004, 'stacey', 'abrams', 'DEU8_qw3y72$', 2000, 20000, 0, True],  
+        [10005, 'jake', 'paul', 'd^dg23g)@', 100000, 100000, 0, True]]  
 
 # writing to csv file  
 with open(my_csv_file, mode ='w') as csvfile:  
@@ -27,10 +27,14 @@ class Customer:
 
     new_id = 0
     
-    def __init__(self, first_name, last_name, password):
+    def __init__(self, first_name, last_name, password, balance_checking=0, balance_savings=0, num_of_overdrafts=0, is_active=True):
         self.first_name = first_name
         self.last_name = last_name
         self.password = password
+        self.balance_checking = balance_checking
+        self.balance_savings = balance_savings
+        self.num_of_overdrafts = num_of_overdrafts
+        self.is_active = is_active
 
     # create a default ID to customers when we add them
     def create_customer_id(self):
@@ -46,7 +50,7 @@ class Customer:
         return new_id
 
     # append the new customer to the csv file
-    def add_customer_to_csv(self, balance_checking=0, balance_savings=0):
+    def add_customer_to_csv(self):
         try:
             # check if the customer is already exist
             with open(my_csv_file, mode='r') as csvfile:
@@ -55,15 +59,17 @@ class Customer:
                 for line in content:
                     if line[1] == self.first_name and line[2] == self.last_name:
                         print(f"Sorry, customer with name ({self.first_name} {self.last_name}) is already exists.")
-                        return 
+                        return False
                     
             # create list to add customer
             new_customer = [self.create_customer_id(), 
                             self.first_name,
                             self.last_name,
                             self.password,
-                            balance_checking,
-                            balance_savings]
+                            self.balance_checking,
+                            self.balance_savings,
+                            self.num_of_overdrafts,
+                            self.is_active]
             
             # add the customer
             with open(my_csv_file, mode='a') as csvfile:  # 'a' stands for append
@@ -74,7 +80,7 @@ class Customer:
                 
         except FileNotFoundError:
             print(f"Sorry, the csv file ({my_csv_file}) is not found. Please make sure you have the correct file.")
-        
+            return False
 
 # just testing my function here
 # customer = Customer('Ghada', 'Almutairi', 'GH124')
