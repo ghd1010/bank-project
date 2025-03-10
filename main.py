@@ -11,7 +11,7 @@ my_csv_file = "bank.csv"
 
 if not os.path.exists(my_csv_file):
     # field names  
-    fields = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings','num_of_overdrafts', 'is_active']  
+    fields = ['account_id', 'first_name', 'last_name', 'password', 'balance_checking', 'balance_savings','num_of_overdrafts', 'is_active']  
     
     # data rows of csv file  
     rows = [[10001, 'suresh', 'sigera', 'juagw362', 1000, 10000, 0, True],  
@@ -141,6 +141,14 @@ class Account:
 
 
 def main():
+
+    # read the csv file once and store customer data
+    customers_data = []
+    with open(my_csv_file, mode='r') as csvfile:
+        content = csv.reader(csvfile)
+        next(content)  # skip header row
+        customers_data = [line for line in content]  # store all customers in customers_data list
+    
     #MENU
     welcome_text = colored('''                         🏦 Welcome to ACME Bank 🏦''', 'green')
     question_text = colored('''                       What are you looking for today?''', 'light_blue')
@@ -149,11 +157,11 @@ def main():
 
     print(full_text)
 
-    options = ["Sign up", "Login"]
-    terminal_menu = TerminalMenu(options)
+    options1 = ["Sign up", "Login"]
+    terminal_menu = TerminalMenu(options1)
     menu_entry_index = terminal_menu.show()
 
-    if options[menu_entry_index] == options[0]:
+    if options1[menu_entry_index] == options1[0]: # sign up
         customer_fname = input(colored('Please enter your first name: ' ,'green'))
         customer_lname = input(colored('Please enter your last name: ' ,'green'))
         customer_password= input(colored('Please enter your password: ' ,'green'))
@@ -161,29 +169,51 @@ def main():
         customer = Customer(customer_fname, customer_lname, customer_password)
         customer.add_customer_to_csv()
 
-    elif options[menu_entry_index] == options[1]:
+    elif options1[menu_entry_index] == options1[1]: # login
         customer_ID = input(colored('Please enter your ID: ' ,'green'))
         customer_password= input(colored('Please enter your password: ' ,'green'))
         
         # login process
-        with open(my_csv_file, mode='r') as csvfile:
-            content = csv.reader(csvfile)
-            next(content)  # skip header
-            for line in content:
-                if line[0] == customer_ID and line[3] == customer_password:
-                    print(colored(f'''\n                             Hello, {line[1]}!\n''', 'light_blue'))
-                    
-                    # after successful login, show account options
-                    options2 = ["Withdraw", "Deposit", "Transfer"]
-                    terminal_menu = TerminalMenu(options2)
-                    login_menu = terminal_menu.show()
+        customer_login_info = None
+        for line in customers_data:
+            if line[0] == customer_ID and line[3] == customer_password:
+                customer_login_info = line
+                break
+            if customer_login_info:
+                print(colored(f'''\n                             Hello, {customer_login_info[1]}!\n''', 'light_blue'))
+                # create account obj for the loggedin customer:
+                customer_logged_account = Account(
+                    customer_login_info[0],
+                    float(customer_login_info[1]),
+                    float(customer_login_info[2]),
+                    int(customer_login_info[3]),
+                    customer_login_info[4]
+                )
+                
+                # after successful login, show account options
+                options2 = ["Withdraw", "Deposit", "Transfer"]
+                terminal_menu = TerminalMenu(options2)
+                login_menu = terminal_menu.show()
 
-                    if options2[login_menu] == options2[0]: #for withdraw function
-                        pass
-                    elif options2[login_menu] == options2[1]: #for deposit function
-                        pass
-                    elif options2[login_menu] == options2[2]: #for transfer function
-                        pass
+                if options2[login_menu] == options2[0]: #for withdraw function
+                    pass
+                elif options2[login_menu] == options2[1]: #for deposit function
+                    # choosing which account
+                    print('Account:')
+                    options3 = ["Checking account", "Savings account"]
+                    terminal_menu = TerminalMenu(options3)
+                    accounts_menu = terminal_menu.show()
+                        
+                    if options3[accounts_menu] == options3[0]:
+                        print(colored(f"Balance of your checking account is = {customer_logged_account.balance_checking}", 'light_blue'))
+                        amount = input(colored('Please enter the amount: ','green'))
+                        float(amount)
+                        new_checking_acc_balance = customer_logged_account.balance_checking_deposit(amount)
+                        print(colored(f"Deposit successful! New checking account balance: {new_checking_acc_balance}", 'light_blue'))
+
+                    
+                elif options2[login_menu] == options2[2]: #for transfer function
+                    pass
                     break
             else:
                 print(colored("\nSorry, invalid ID or password. Please try again.", "yellow"))
