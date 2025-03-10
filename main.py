@@ -103,6 +103,18 @@ class Account:
         self.balance_savings = balance_savings
         self.num_of_overdrafts = num_of_overdrafts
         self.is_active = is_active
+        
+    def balance_checking_deposit(self):
+        pass
+    
+    def balance_savings_deposit(self):
+        pass
+    
+    def balance_checking_withdraw(self):
+        pass
+    
+    def balance_savings_withdraw(self):
+        pass
 
 
 def main():
