@@ -65,7 +65,7 @@ class Customer:
                 content = csv.reader(csvfile)
                 next(content)  # Skip header
                 for line in content:
-                    if line[1] == self.first_name and line[2] == self.last_name:
+                    if line[1].lower() == self.first_name and line[2].lower() == self.last_name:
                         print(f"Sorry, customer with name ({self.first_name} {self.last_name}) is already exists.")
                         return False
                     
@@ -85,8 +85,11 @@ class Customer:
                 csvwriter = csv.writer(csvfile)  
                 # writing the data row
                 csvwriter.writerow(new_customer)
+                
+                account_id = new_customer[0]
+                print(colored("\nYou have signed up succcessfully! Please login to the system ", "light_blue"))
+                print(colored(f"Your account ID is: {account_id} \n", "grey"))
 
-                print(colored("You have signed up succcessfully! Please login to the system ", "light_blue"))
                 return True
             
         except FileNotFoundError:
@@ -105,9 +108,9 @@ class Customer:
 
 
 def main():
-                                    #MENU
+    #MENU
     welcome_text = colored('''                         🏦 Welcome to ACME Bank 🏦''', 'green')
-    question_text = colored('''                        What are you looking for today?''', 'light_blue')
+    question_text = colored('''                       What are you looking for today?''', 'light_blue')
 
     full_text = f"\n{welcome_text}\n{question_text}\n"
 
