@@ -60,40 +60,47 @@ class Customer:
     # append the new customer to the csv file
     def add_customer_to_csv(self):
         try:
-            # check if the customer is already exist
+            # check if customer already exists
             with open(my_csv_file, mode='r') as csvfile:
                 content = csv.reader(csvfile)
-                next(content)  # Skip header
-                for line in content:
-                    if line[1].lower() == self.first_name and line[2].lower() == self.last_name:
-                        print(f"Sorry, customer with name ({self.first_name} {self.last_name}) is already exists.")
-                        return False
-                    
-            # create list to add customer
-            new_customer = [self.create_customer_id(), 
-                            self.first_name,
-                            self.last_name,
-                            self.password,
-                            self.balance_checking,
-                            self.balance_savings,
-                            self.num_of_overdrafts,
-                            self.is_active]
-            
-            # add the customer
-            with open(my_csv_file, mode='a') as csvfile:  # 'a' stands for append
-                # creating a csv writer object  
-                csvwriter = csv.writer(csvfile)  
-                # writing the data row
-                csvwriter.writerow(new_customer)
+                next(content)  # skip header
                 
+                for line in content:
+                    if not self.first_name or not self.last_name:  # empty input check
+                        print("Sorry, first name or last name is empty. Please enter a valid alphabetic input.")
+                        return False
+                    elif self.first_name.isdigit() or self.last_name.isdigit():  # numeric name check
+                        print("Sorry, first name or last name should not be numbers.")
+                        return False
+                    elif len(line) > 2 and line[1].lower() == self.first_name.lower() and line[2].lower() == self.last_name.lower():
+                        print(f"Sorry, customer with name ({self.first_name} {self.last_name}) already exists.")
+                        return False
+
+            # create a list to add the customer
+            new_customer = [
+                self.create_customer_id(),
+                self.first_name,
+                self.last_name,
+                self.password,
+                self.balance_checking,
+                self.balance_savings,
+                self.num_of_overdrafts,
+                self.is_active
+            ]
+
+            # append the customer to the CSV file
+            with open(my_csv_file, mode='a', newline='') as csvfile:  #newline='' to avoid extra blank lines
+                csvwriter = csv.writer(csvfile)
+                csvwriter.writerow(new_customer)
+
                 account_id = new_customer[0]
-                print(colored("\nYou have signed up succcessfully! Please login to the system ", "light_blue"))
+                print(colored("\nYou have signed up successfully! Please login to the system.", "light_blue"))
                 print(colored(f"Your account ID is: {account_id} \n", "grey"))
 
                 return True
-            
+
         except FileNotFoundError:
-            print(f"Sorry, the csv file ({my_csv_file}) is not found. Please make sure you have the correct file.")
+            print(f"Sorry, the CSV file ({my_csv_file}) is not found. Please make sure you have the correct file.")
             return False
 
 class Account:
@@ -104,8 +111,16 @@ class Account:
         self.num_of_overdrafts = num_of_overdrafts
         self.is_active = is_active
         
-    def balance_checking_deposit(self):
-        pass
+    def balance_checking_deposit(self, amount):
+        if amount < 0:
+            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positivr non-zero number'), 'yellow')
+            return False
+        elif amount == 0:
+            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
+        else:
+            self.balance_checking += amount
+            return self.balance_checking
     
     def balance_savings_deposit(self):
         pass
