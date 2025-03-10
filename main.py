@@ -113,17 +113,25 @@ class Account:
         
     def balance_checking_deposit(self, amount):
         if amount < 0:
-            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positivr non-zero number'), 'yellow')
+            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positivr non-zero number', 'yellow'))
             return False
         elif amount == 0:
-            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number'), 'yellow')
+            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
             return False
         else:
             self.balance_checking += amount
             return self.balance_checking
     
-    def balance_savings_deposit(self):
-        pass
+    def balance_savings_deposit(self, amount):
+        if amount < 0:
+            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
+        elif amount == 0:
+            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
+        else:
+            self.balance_savings += amount
+            return self.balance_savings
     
     def balance_checking_withdraw(self):
         pass

@@ -1,5 +1,5 @@
 import unittest
-from main import Customer
+from main import Customer, Account
 
 class TestCustomer(unittest.TestCase):
     
@@ -9,31 +9,35 @@ class TestCustomer(unittest.TestCase):
         self.test_customer_three = Customer('', '','') # empty
         self.test_customer_four = Customer('11', '22','xxx123') # numbers 
         self.test_customer_five = Customer('melvin', 'gordon','uYWE732g4ga1') 
-        self.test_customer_five.balance_checking = 150
-        self.test_customer_five.balance_savings = 100
         self.test_customer_six = Customer('Haya', 'Almutairi','password432') # customer with 0 checking and savings balance
 
+        # # add customers to csv file cause I need them to test the account class functions
+        # self.test_customer_six.add_customer_to_csv() # account id = 10006 
 
     def test_add_customer_to_csv(self):
         self.assertEqual(self.test_customer_one.add_customer_to_csv(), False)  # test a pre-existed customer
         self.assertEqual(self.test_customer_two.add_customer_to_csv(), False)  # test a pre-existed customer (case insensitive)
         self.assertEqual(self.test_customer_three.add_customer_to_csv(), False)  # test empty inputs
         self.assertEqual(self.test_customer_four.add_customer_to_csv(), False)  # test first name, last name as numbers
+        self.assertEqual(self.test_customer_six.add_customer_to_csv(), True)  # test adding a valid customer
 
-# class TestAccount(unittest.TestCase):
+
+class TestAccount(unittest.TestCase):
     
-#     def setUp(self): # create a account object
-#         self.test_account_one = Account(account_id, balance_checking, balance_savings, num_of_overdrafts, is_active
+    def setUp(self): # create a account object
+        self.test_account_one= Account(10003, 2000, 20000, 0, True)
+        self.test_account_two= Account(10006, 0, 0, 0, True)
+        
 
-#     def test_balance_checking_deposit(self):
-#         self.assertEqual(self.test_customer_five.balance_checking_deposit(50), 200) # deposit from checking account
-#         self.assertEqual(self.test_customer_five.balance_checking_deposit(-50), False) # deposit a negative number from checking account
-#         self.assertEqual(self.test_customer_five.balance_checking_deposit(0), False) # deposit zero in checking account
+    def test_balance_checking_deposit(self):
+        self.assertEqual(self.test_account_one.balance_checking_deposit(50), 2050) # deposit from checking account
+        self.assertEqual(self.test_account_one.balance_checking_deposit(-50), False) # deposit a negative number from checking account
+        self.assertEqual(self.test_account_one.balance_checking_deposit(0), False) # deposit zero in checking account
 
-#     def test_balance_savings_deposit(self):
-#         self.assertEqual(self.test_customer_five.balance_savings_deposit(50), 200) # deposit from savings account
-#         self.assertEqual(self.test_customer_five.balance_savings_deposit(-50), False) # deposit a negative number from savings account
-#         self.assertEqual(self.test_customer_five.balance_savings_deposit(0), False) # deposit zero in savings account       
+    def test_balance_savings_deposit(self):
+        self.assertEqual(self.test_account_one.balance_savings_deposit(50), 20050) # deposit from savings account
+        self.assertEqual(self.test_account_one.balance_savings_deposit(-50), False) # deposit a negative number from savings account
+        self.assertEqual(self.test_account_one.balance_savings_deposit(0), False) # deposit zero in savings account       
 
 #     def test_balance_checking_withdraw(self):
 #         self.assertEqual(self.test_customer_five.balance_checking_withdraw(50), 150) # withdraw from checking account
