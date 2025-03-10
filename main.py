@@ -96,15 +96,13 @@ class Customer:
             print(f"Sorry, the csv file ({my_csv_file}) is not found. Please make sure you have the correct file.")
             return False
 
-# just testing my function here
-# customer = Customer('Ghada', 'Almutairi', 'GH124')
-# customer.add_customer_to_csv()
-
-# class Account:
-#     def __init__(self, account_id, balance_checking, balance_savings):
-#         self.account_id = account_id
-#         self.balance_checking = balance_checking
-#         self.balance_savings = balance_savings
+class Account:
+    def __init__(self, account_id, balance_checking, balance_savings, num_of_overdrafts, is_active):
+        self.account_id = account_id
+        self.balance_checking = balance_checking
+        self.balance_savings = balance_savings
+        self.num_of_overdrafts = num_of_overdrafts
+        self.is_active = is_active
 
 
 def main():
