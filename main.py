@@ -131,11 +131,12 @@ class Account:
             return False
         else:
             self.balance_savings += amount
+            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "green"))
             return self.balance_savings
     
-    def balance_checking_withdraw(self):
+    def balance_checking_withdraw(self, amount):
         pass
-    
+
     def balance_savings_withdraw(self):
         pass
 
@@ -205,24 +206,24 @@ def main():
                     accounts_menu = terminal_menu.show()
                         
                     if options3[accounts_menu] == options3[0]:
-                        print(colored(f"Balance of your checking account is = {customer_logged_account.balance_checking}", 'light_blue'))
+                        print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
                         amount = input(colored('Please enter the amount: ','green'))
                         try:
                             float(amount)
                             new_checking_acc_balance = customer_logged_account.balance_checking_deposit(amount)
                             if new_checking_acc_balance != False:
-                                print(colored(f"Deposit successful! New checking account balance: {new_checking_acc_balance}", 'light_blue'))
+                                print(colored(f"Deposit successful! New checking account balance: $ {new_checking_acc_balance} $", 'light_blue'))
                         except ValueError:
                             print(colored("Sorry, invalid input. Please enter a positive number", 'yellow'))
 
                     if options3[accounts_menu] == options3[1]:
-                        print(colored(f"Balance of your savings account is = {customer_logged_account.balance_savings}", 'light_blue'))
+                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings}", 'light_blue'))
                         amount = input(colored('Please enter the amount: ','green'))
                         try:
                             float(amount)
                             new_checking_acc_balance = customer_logged_account.balance_savings_deposit(amount)
                             if new_checking_acc_balance != False:
-                                print(colored(f"Deposit successful! New checking account balance: {new_checking_acc_balance}", 'light_blue'))
+                                print(colored(f"Deposit successful! New checking account balance: $ {new_checking_acc_balance}", 'light_blue'))
                         except ValueError:
                             print(colored("Sorry, invalid input. Please enter a positive number", 'yellow'))
 

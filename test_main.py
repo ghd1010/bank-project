@@ -39,18 +39,18 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(self.test_account_one.balance_savings_deposit(-50), False) # deposit a negative number from savings account
         self.assertEqual(self.test_account_one.balance_savings_deposit(0), False) # deposit zero in savings account       
 
-#     def test_balance_checking_withdraw(self):
-#         self.assertEqual(self.test_customer_five.balance_checking_withdraw(50), 150) # withdraw from checking account
-#         self.assertEqual(self.test_customer_five.balance_checking_withdraw(-50), False) # withdraw a negative number from checking account
-#         self.assertEqual(self.test_customer_five.balance_checking_withdraw(0), False) # withdraw zero from checking account
-#         self.assertEqual(self.test_customer_six.balance_checking_withdraw(100), -35.0) # overdraft in checking account
+    def test_balance_checking_withdraw(self):
+        self.assertEqual(self.test_account_two.balance_checking_withdraw(50), 150) # withdraw from checking account
+        self.assertEqual(self.test_account_two.balance_checking_withdraw(-50), False) # withdraw a negative number from checking account
+        self.assertEqual(self.test_account_two.balance_checking_withdraw(0), False) # withdraw zero from checking account
+        self.assertEqual(self.test_account_two.balance_checking_withdraw(100), -35.0) # overdraft in checking account
 
 
-#     def test_balance_savings_withdraw(self):
-#         self.assertEqual(self.test_customer_five.balance_savings_withdraw(50), 150) # withdraw from savings account
-#         self.assertEqual(self.test_customer_five.balance_savings_withdraw(-50), False) # withdraw a negative number from savings account
-#         self.assertEqual(self.test_customer_five.balance_savings_withdraw(0), False) # withdraw zero from savings account
-#         self.assertEqual(self.test_customer_six.balance_savings_withdraw(100), -35.0) # overdraft in savings account
+    def test_balance_savings_withdraw(self):
+        self.assertEqual(self.test_account_two.balance_savings_withdraw(50), 150) # withdraw from savings account
+        self.assertEqual(self.test_account_two.balance_savings_withdraw(-50), False) # withdraw a negative number from savings account
+        self.assertEqual(self.test_account_two.balance_savings_withdraw(0), False) # withdraw zero from savings account
+        self.assertEqual(self.test_account_two.balance_savings_withdraw(100), -35.0) # overdraft in savings account
 
 
 
