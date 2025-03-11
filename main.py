@@ -179,8 +179,45 @@ class Account:
 
         return self.balance_checking
 
-    def balance_savings_withdraw(self):
-        pass
+    def balance_savings_withdraw(self, amount):
+        overdraft_amount = 35
+        # make sure that the amount is not zero or negative
+        if amount < 0:
+            print(colored('Sorry, you can\'t withdraw a negative number. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
+        if amount == 0:
+            print(colored('Sorry, you can\'t withdraw zero. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
+        
+        # check on the balance, if the balance > 0 :
+        # successful witdrawal
+        if self.balance_savings >= amount:
+            self.balance_savings -= amount
+            print(colored(f"Withdrawal successful! New balance: ${self.balance_savings}", "light_blue"))
+            return self.balance_savings
+            
+        
+        if self.balance_savings < 0 and amount > 100:
+            # cannot withdraw more than 100$
+            print(colored('Withdrawal denied: Cannot withdraw more than $100 when account is negative', 'yellow'))
+            return False
+            
+        # the account cannot have a resulting balance of less than -$100 (range)
+        if(self.balance_savings - amount - overdraft_amount) < -100:
+            print(colored("Withdrawal denied: Overdraft limit of -$100", 'yellow'))
+            return False
+                
+        # apply protection overdraft
+        self.balance_savings -= (amount + overdraft_amount)
+        self.num_of_overdrafts += 1
+        print(colored(f'Overdraft! Charged $35 fee. new balance: ${self.balance_savings}', 'light_blue'))
+                
+        # deactivate account after applying 2 overdrafts
+        if self.num_of_overdrafts >= 2:
+            self.is_active = False
+            print(colored('Account deactivated.', 'yellow'))
+
+        return self.balance_savings
 
 
 def main():
