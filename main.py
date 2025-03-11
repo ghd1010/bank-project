@@ -221,22 +221,28 @@ class Account:
 
 
 def main():
+#------------------------------------------------------------#
+        # read the csv file once and store customer data
+#------------------------------------------------------------#
 
-    # read the csv file once and store customer data
     customers_data = []
     with open(my_csv_file, mode='r') as csvfile:
         content = csv.reader(csvfile)
         next(content)  # skip header row
         customers_data = [line for line in content]  # store all customers in customers_data list
     
-    #MENU
+#------------------------------------------------------------#
+                        # MENU intro
+#------------------------------------------------------------#
     welcome_text = colored('''                         🏦 Welcome to ACME Bank 🏦''', 'green')
     question_text = colored('''                       What are you looking for today?''', 'light_blue')
 
     full_text = f"\n{welcome_text}\n{question_text}\n"
 
     print(full_text)
-
+#------------------------------------------------------------#
+                    # Sign up - Login options
+#------------------------------------------------------------#
     options1 = ["Sign up", "Login"]
     terminal_menu = TerminalMenu(options1)
     menu_entry_index = terminal_menu.show()
