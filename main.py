@@ -135,7 +135,7 @@ class Account:
             return False
         else:
             self.balance_savings += amount
-            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "green"))
+            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
             return self.balance_savings
     
     def balance_checking_withdraw(self, amount):
@@ -276,15 +276,18 @@ def main():
                 login_menu = terminal_menu.show()
 
                 if options2[login_menu] == options2[0]: #for withdraw function
-                    pass
+                    print('Account:')
+                    options4 = ["Checking account", "Savings account"]
+                    terminal_menu = TerminalMenu(options4)
+                    accounts_menu1 = terminal_menu.show()
                 elif options2[login_menu] == options2[1]: #for deposit function
                     # choosing which account
                     print('Account:')
-                    options3 = ["Checking account", "Savings account"]
-                    terminal_menu = TerminalMenu(options3)
-                    accounts_menu = terminal_menu.show()
+                    options4 = ["Checking account", "Savings account"]
+                    terminal_menu = TerminalMenu(options4)
+                    accounts_menu2 = terminal_menu.show()
                         
-                    if options3[accounts_menu] == options3[0]:
+                    if options4[accounts_menu2] == options4[0]:
                         print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
                         amount = input(colored('Please enter the amount: ','green'))
                         try:
@@ -295,7 +298,7 @@ def main():
                         except ValueError:
                             print(colored("Sorry, invalid input. Please enter a positive number", 'yellow'))
 
-                    if options3[accounts_menu] == options3[1]:
+                    if options4[accounts_menu2] == options4[1]:
                         print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings}", 'light_blue'))
                         amount = input(colored('Please enter the amount: ','green'))
                         try:
