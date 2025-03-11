@@ -60,23 +60,27 @@ class Customer:
     # append the new customer to the csv file
     def add_customer_to_csv(self):
         try:
-            # check if customer already exists
+            # check for empty first or last name before processing the csv file
+            if not self.first_name or not self.last_name:
+                print("Sorry, first name or last name is empty. Please enter a valid alphabetic input.")
+                return False
+            
+            # check if first name or last name contains numbers
+            elif self.first_name.isdigit() or self.last_name.isdigit():
+                print("Sorry, first name or last name should not be numbers.")
+                return False
+            
+            # check if the customer already exists in the csv file
             with open(my_csv_file, mode='r') as csvfile:
                 content = csv.reader(csvfile)
                 next(content)  # skip header
                 
                 for line in content:
-                    if not self.first_name or not self.last_name:  # empty input check
-                        print("Sorry, first name or last name is empty. Please enter a valid alphabetic input.")
-                        return False
-                    elif self.first_name.isdigit() or self.last_name.isdigit():  # numeric name check
-                        print("Sorry, first name or last name should not be numbers.")
-                        return False
-                    elif len(line) > 2 and line[1].lower() == self.first_name.lower() and line[2].lower() == self.last_name.lower():
+                    if len(line) > 2 and line[1].lower() == self.first_name.lower() and line[2].lower() == self.last_name.lower():
                         print(f"Sorry, customer with name ({self.first_name} {self.last_name}) already exists.")
                         return False
 
-            # create a list to add the customer
+            # create a list for the new customer
             new_customer = [
                 self.create_customer_id(),
                 self.first_name,
@@ -88,8 +92,8 @@ class Customer:
                 self.is_active
             ]
 
-            # append the customer to the CSV file
-            with open(my_csv_file, mode='a', newline='') as csvfile:  #newline='' to avoid extra blank lines
+            # append the new customer to the csv file
+            with open(my_csv_file, mode='a', newline='') as csvfile:
                 csvwriter = csv.writer(csvfile)
                 csvwriter.writerow(new_customer)
 
@@ -124,10 +128,10 @@ class Account:
     
     def balance_savings_deposit(self, amount):
         if amount < 0:
-            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number'), 'yellow')
+            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number', 'yellow'))
             return False
         elif amount == 0:
-            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number'), 'yellow')
+            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
             return False
         else:
             self.balance_savings += amount
@@ -135,7 +139,45 @@ class Account:
             return self.balance_savings
     
     def balance_checking_withdraw(self, amount):
-        pass
+        
+        overdraft_amount = 35
+        # make sure that the amount is not zero or negative
+        if amount < 0:
+            print(colored('Sorry, you can\'t withdraw a negative number. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
+        if amount == 0:
+            print(colored('Sorry, you can\'t withdraw zero. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
+        
+        # check on the balance, if the balance > 0 :
+        # successful witdrawal
+        if self.balance_checking >= amount:
+            self.balance_checking -= amount
+            print(colored(f"Withdrawal successful! New balance: ${self.balance_checking}", "light_blue"))
+            return self.balance_checking
+            
+        
+        if self.balance_checking < 0 and amount > 100:
+            # cannot withdraw more than 100$
+            print(colored('Withdrawal denied: Cannot withdraw more than $100 when account is negative', 'yellow'))
+            return False
+            
+        # the account cannot have a resulting balance of less than -$100 (range)
+        if(self.balance_checking - amount - overdraft_amount) < -100:
+            print(colored("Withdrawal denied: Overdraft limit of -$100", 'yellow'))
+            return False
+                
+        # apply protection overdraft
+        self.balance_checking -= (amount + overdraft_amount)
+        self.num_of_overdrafts += 1
+        print(colored(f'Overdraft! Charged $35 fee. new balance: ${self.balance_checking}', 'light_blue'))
+                
+        # deactivate account after applying 2 overdrafts
+        if self.num_of_overdrafts >= 2:
+            self.is_active = False
+            print(colored('Account deactivated.', 'yellow'))
+
+        return self.balance_checking
 
     def balance_savings_withdraw(self):
         pass
