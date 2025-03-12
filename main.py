@@ -263,10 +263,10 @@ class Account:
         self.update_balance(self.account_id, self.balance_checking, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
         return self.balance_savings
 
-# class Transactions:
+class Transactions:
     
-#     def __init__(self, account_id):
-#         self.account_id = account_id
+    def __init__(self, account_id):
+        self.account_id = account_id
         
     
 

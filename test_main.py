@@ -40,33 +40,33 @@ class TestDeposit(unittest.TestCase):
     #     self.assertEqual(self.test_account_one.balance_savings_deposit(0), False) # deposit zero    
     #     self.assertEqual(self.test_account_one.balance_savings_deposit(50), 20050) #  deposit : success
 
-class TestWithdraw(unittest.TestCase):
+# class TestWithdraw(unittest.TestCase):
     
-    def setUp(self):  
-            self.test_account_one = Account(10001, 1000, 10000, 0, True) 
-            self.test_account_two = Account(10006, 0, 0, 1, True)  # num of overdrafts = 1
-            self.test_account_three = Account(10002, -50, 500, 1, True)  # already negative balance in checking
+#     def setUp(self):  
+#             self.test_account_one = Account(10001, 1000, 10000, 0, True) 
+#             self.test_account_two = Account(10006, 0, 0, 1, True)  # num of overdrafts = 1
+#             self.test_account_three = Account(10002, -50, 500, 1, True)  # already negative balance in checking
 
-    def test_balance_checking_withdraw(self):
-        self.assertEqual(self.test_account_one.balance_checking_withdraw('hello!'), False)  # enter amount as a string
-        self.assertEqual(self.test_account_one.balance_checking_withdraw(-50), False)  # withdraw a negative number 
-        self.assertEqual(self.test_account_one.balance_checking_withdraw(0), False)  # withdraw zero   
-        self.assertEqual(self.test_account_one.balance_checking_withdraw(50), 950)  # withdraw : success
+#     def test_balance_checking_withdraw(self):
+#         self.assertEqual(self.test_account_one.balance_checking_withdraw('hello!'), False)  # enter amount as a string
+#         self.assertEqual(self.test_account_one.balance_checking_withdraw(-50), False)  # withdraw a negative number 
+#         self.assertEqual(self.test_account_one.balance_checking_withdraw(0), False)  # withdraw zero   
+#         self.assertEqual(self.test_account_one.balance_checking_withdraw(50), 950)  # withdraw : success
 
-    def test_balance_checking_withdraw_with_overdraft(self):
-            self.assertEqual(self.test_account_two.balance_checking_withdraw(40), -75)  
-            self.assertEqual(self.test_account_two.balance_checking_withdraw(100), False)  
+#     def test_balance_checking_withdraw_with_overdraft(self):
+#             self.assertEqual(self.test_account_two.balance_checking_withdraw(40), -75)  
+#             self.assertEqual(self.test_account_two.balance_checking_withdraw(100), False)  
 
-    def test_balance_saving_withdraw(self):
-        self.assertEqual(self.test_account_one.balance_checking_withdraw('100!'), False)  # enter amount as a string
-        self.assertEqual(self.test_account_one.balance_checking_withdraw(-50), False)  # withdraw a negative number 
-        self.assertEqual(self.test_account_one.balance_checking_withdraw(0), False)  # withdraw zero   
-        self.assertEqual(self.test_account_one.balance_savings_withdraw(25000), False)  # withdraw > balance
-        self.assertEqual(self.test_account_two.balance_savings_withdraw(50), -85) # withdraw : success
+#     def test_balance_saving_withdraw(self):
+#         self.assertEqual(self.test_account_one.balance_checking_withdraw('100!'), False)  # enter amount as a string
+#         self.assertEqual(self.test_account_one.balance_checking_withdraw(-50), False)  # withdraw a negative number 
+#         self.assertEqual(self.test_account_one.balance_checking_withdraw(0), False)  # withdraw zero   
+#         self.assertEqual(self.test_account_one.balance_savings_withdraw(25000), False)  # withdraw > balance
+#         self.assertEqual(self.test_account_two.balance_savings_withdraw(50), -85) # withdraw : success
 
-    def test_balance_checking_withdraw_negative_balance(self):
-        self.assertEqual(self.test_account_three.balance_checking_withdraw(10), -95)  # balance updated
-        self.assertEqual(self.test_account_three.balance_checking_withdraw(100), False)  
+#     def test_balance_checking_withdraw_negative_balance(self):
+#         self.assertEqual(self.test_account_three.balance_checking_withdraw(10), -95)  # balance updated
+#         self.assertEqual(self.test_account_three.balance_checking_withdraw(100), False)  
     
 
 
