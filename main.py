@@ -328,7 +328,82 @@ class Transactions:
         
             return True
     
-    # def
+    def transfer_to_other_user(self, amount, from_account, to_account_id):
+        try:
+            amount = float(amount)
+        except ValueError:
+            print(colored("Invalid amount. Please enter a numeric value", "yellow"))
+            return False
+        
+        if amount <= 0:
+            print(colored("Transfer amount must be greater than zero", "yellow"))
+            return False
+        
+        if from_account == "checking":
+            sender_col = "balance_checking"
+        elif from_account == "savings":
+            sender_col= "balance_savings"
+        else:
+            print(colored("Invalid account type. Please use'checking' or 'savings'", "yellow"))
+            return False
+        
+        updated_info = []
+        sender_found = False
+        beneficiary_found = False
+        sender_balance = 0
+        beneficiary_balance = 0
+        
+        with open(my_csv_file, mode="r", newline="") as file: # read csv file
+            reader = csv.DictReader(file)
+            fieldnames = reader.fieldnames
+            
+            for row in reader:
+                #---------- sender account ----------#
+                if row["account_id"] == str(self.account_id):  
+                    sender_found = True
+                    sender_balance = float(row[sender_col])
+                    sender_is_active = row["is_active"] == "True"
+
+                    if not sender_is_active:
+                        print(colored(f"Sorry, you can't transfer due to your inactive account", "yellow"))
+                        return False
+
+                    if sender_balance < amount:
+                        print(colored(f"Sorry, ${amount} is more than the balance of the account", "yellow"))
+                        return False
+
+                    row[sender_col] = str(sender_balance - amount) # apply the transfer
+                    
+                #---------- beneficiary account ----------#
+                if row["account_id"] == str(to_account_id): 
+                    beneficiary_found = True
+                    beneficiary_is_active = row["is_active"] == "True"
+                    
+                    if not beneficiary_is_active:
+                        print(colored(f"Sorry, the account you are trying to transfer to is inactive", "yellow"))
+                        return False
+                    
+                    beneficiary_balance = float(row["balance_checking"])  # transfer money to checking account
+                    row["balance_checking"] = str(beneficiary_balance + amount)  # apply transfer to beneficiary
+
+                updated_info.append(row)
+
+        if not sender_found:
+            print(colored("Sender account not found", "yellow"))
+            return False
+
+        if not beneficiary_found:
+            print(colored("Beneficiary account not found", "yellow"))
+            return False
+
+        with open(my_csv_file, mode="w", newline="") as file: # write the updated info
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(updated_info)
+
+        print(colored(f"Transfer successful! ${amount} sent to account {to_account_id}", "light_blue"))
+        return True
+        
 
 # def main():
 # #------------------------------------------------------------#
