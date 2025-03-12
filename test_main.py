@@ -78,14 +78,24 @@ class TestTransactions(unittest.TestCase):
         self.test_account_three= Transactions(10005, True)
         self.test_account_four= Transactions(10004, True)
 
-    def test_transfer_from_savings_to_checking(self):
-        self.assertEqual(self.test_account_one.transfer_between_accounts(200, "checking", "savings"), True)  # success
-        self.assertEqual(self.test_account_two.transfer_between_accounts(-10, "checking", "savings"), False)  # negative amount
-        self.assertEqual(self.test_account_two.transfer_between_accounts(-10, "xxxx", "yyy"), False)  # different from (checking/savings)
-        self.assertEqual(self.test_account_two.transfer_between_accounts(200, "checking", "savings"), False)  # transfer for inactive account
-        self.assertEqual(self.test_account_three.transfer_between_accounts("200", "checking", "savings"), True)  # take amount as string (number)
-        self.assertEqual(self.test_account_three.transfer_between_accounts("Hello", "checking", "savings"), False)  # take amount as string (letters)
-        self.assertEqual(self.test_account_four.transfer_between_accounts(3000, "checking", "savings"), False)  # amount > balance
+    # def test_transfer_between_my_accounts(self):
+    #     self.assertEqual(self.test_account_one.transfer_between_accounts(200, "checking", "savings"), True)  # success
+    #     self.assertEqual(self.test_account_two.transfer_between_accounts(-10, "checking", "savings"), False)  # negative amount
+    #     self.assertEqual(self.test_account_two.transfer_between_accounts(10, "xxxx", "yyy"), False)  # different from (checking/savings)
+    #     self.assertEqual(self.test_account_two.transfer_between_accounts(200, "checking", "savings"), False)  # transfer for inactive account
+    #     self.assertEqual(self.test_account_three.transfer_between_accounts("200", "checking", "savings"), True)  # take amount as string (number)
+    #     self.assertEqual(self.test_account_three.transfer_between_accounts("Hello", "checking", "savings"), False)  # take amount as string (letters)
+    #     self.assertEqual(self.test_account_four.transfer_between_accounts(3000, "checking", "savings"), False)  # amount > balance
+    #     self.assertEqual(self.test_account_four.transfer_between_accounts(10, "savings", "checking"), True)  # from savings to checking
+
+    def test_transfer_to_other_user(self):
+        self.assertEqual(self.test_account_one.transfer_to_other_user(300, "checking", 10005), True)  # success
+        self.assertEqual(self.test_account_one.transfer_to_other_user(-10, "checking", 10005), False)  # negative amount
+        self.assertEqual(self.test_account_one.transfer_to_other_user(10, "xxxx", 10005), False)  # different from (checking/savings)
+        self.assertEqual(self.test_account_two.transfer_to_other_user(10, "checking", 10005), False)  # transfer form inactive account
+        self.assertEqual(self.test_account_four.test_account_three(2000, "checking", 10005), False)  # amount > balance
+        self.assertEqual(self.test_account_three.transfer_to_other_user(10, "checking", 10006), False)  # transfer to an inactive account
+
 
 
 if __name__ == '__main__':
