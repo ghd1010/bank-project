@@ -146,7 +146,7 @@ class Account:
     
     def balance_checking_deposit(self, amount):
         if type(amount) == str:
-            print(colored('Sorry, amount should be a number.', 'yellow'))
+            print(colored('Sorry, amount should be a number', 'yellow'))
             return False
         elif amount < 0:
             print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number', 'yellow'))
@@ -265,14 +265,68 @@ class Account:
 
 class Transactions:
     
-    def __init__(self, account_id):
+    def __init__(self, account_id, is_active):
         self.account_id = account_id
+        self.is_active = is_active
+
+    def transfer_between_accounts(self, amount, from_account, to_account):
         
-    
+        updated_info = []
+        found = False
+        
+        try:
+            amount = float(amount)
+        except ValueError:
+            print(colored("Sorry, invalid amount. Please enter a numeric value.", "yellow"))
+            return False
+        
+        if amount <= 0:
+            print(colored("Transfer amount must be greater than zero", "yellow"))
+            return False
+        
+        if from_account == "checking" and to_account == "savings":
+            from_col = "balance_checking"
+            to_col = "balance_savings"
+        elif from_account == "savings" and to_account == "checking":
+            from_col= "balance_checking"
+            to_col = "balance_savings"
+        else:
+            print(colored("Invalid account type. Please use'checking' or 'savings'", "yellow"))
+            return False
+        
+        with open(my_csv_file, mode="r", newline="") as file: # read csv file
+            reader = csv.DictReader(file)
+            fieldnames = reader.fieldnames
+            for row in reader:
+                    if row["account_id"] == str(self.account_id):
+                        found = True
+                        from_balance = float(row[from_col])
+                        to_balance = float(row[to_col])
 
+                        if not self.is_active:
+                            print(colored(f"Account {self.account_id} is inactive. Transfer not allowed", "yellow"))
+                            return False
 
+                        if from_balance >= amount:
+                            row[from_col] = str(from_balance - amount)
+                            row[to_col] = str(to_balance + amount)
+                            print(colored(f"Transfer successful! ${amount} moved from {from_account} to {to_account}", "light_blue"))
+                        else:
+                            print(colored(f"Sorry, ${amount} is more than the balance of the {from_account} account", "yellow"))
+                            return False
+                    
+                    updated_info.append(row)
 
-
+            if not found:
+                print(colored("Account not found", "yellow"))
+                return False
+            
+            with open(my_csv_file, mode="w", newline="") as file: # write the updated info
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(updated_info)
+        
+            return True
 
 # def main():
 # #------------------------------------------------------------#
