@@ -98,9 +98,6 @@ class TestTransactions(unittest.TestCase):
         self.assertEqual(self.test_account_three.transfer_to_other_user(10, "checking", 121), False)  # beneficiary account is not in csv file
 
 
-
-
-
 if __name__ == '__main__':
     unittest.main(verbosity=2)
 

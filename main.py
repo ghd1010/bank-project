@@ -3,8 +3,7 @@
 # terminal colors format, from: https://pypi.org/project/termcolor/
 import csv 
 import os
-import sys
-from termcolor import colored, cprint 
+from termcolor import colored
 from simple_term_menu import TerminalMenu
 # name of csv file  
 my_csv_file = "bank.csv"
@@ -145,10 +144,12 @@ class Account:
             
     
     def balance_checking_deposit(self, amount):
-        if type(amount) == str:
-            print(colored('Sorry, amount should be a number', 'yellow'))
+        try:
+            amount = float(amount)
+        except ValueError:
+            print(colored("Sorry, invalid amount. Please enter a numeric value.", "yellow"))
             return False
-        elif amount < 0:
+        if amount < 0:
             print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number', 'yellow'))
             return False
         elif amount == 0:
@@ -161,8 +162,10 @@ class Account:
             return self.balance_checking
     
     def balance_savings_deposit(self, amount):
-        if type(amount) == str:
-            print(colored('Sorry, amount should be a number.', 'yellow'))
+        try:
+            amount = float(amount)
+        except ValueError:
+            print(colored("Sorry, invalid amount. Please enter a numeric value.", "yellow"))
             return False
         if amount < 0:
             print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number', 'yellow'))
@@ -179,8 +182,10 @@ class Account:
     def balance_checking_withdraw(self, amount):
         
         overdraft_amount = 35
-        if type(amount) == str:
-            print(colored('Sorry, amount should be a number.', 'yellow'))
+        try:
+            amount = float(amount)
+        except ValueError:
+            print(colored("Sorry, invalid amount. Please enter a numeric value.", "yellow"))
             return False
         # make sure that the amount is not zero or negative
         if amount < 0:
@@ -223,6 +228,11 @@ class Account:
 
     def balance_savings_withdraw(self, amount):
         overdraft_amount = 35
+        try:
+            amount = float(amount)
+        except ValueError:
+            print(colored("Sorry, invalid amount. Please enter a numeric value.", "yellow"))
+            return False
         # make sure that the amount is not zero or negative
         if amount < 0:
             print(colored('Sorry, you can\'t withdraw a negative number. Please ensure it is a positive non-zero number'), 'yellow')
@@ -288,8 +298,8 @@ class Transactions:
             from_col = "balance_checking"
             to_col = "balance_savings"
         elif from_account == "savings" and to_account == "checking":
-            from_col= "balance_checking"
-            to_col = "balance_savings"
+            from_col= "balance_savings"
+            to_col = "balance_checking"
         else:
             print(colored("Invalid account type. Please use'checking' or 'savings'", "yellow"))
             return False
@@ -329,12 +339,18 @@ class Transactions:
             return True
     
     def transfer_to_other_user(self, amount, from_account, to_account_id):
+
         try:
             amount = float(amount)
         except ValueError:
             print(colored("Invalid amount. Please enter a numeric value", "yellow"))
             return False
-        
+        try:
+            to_account_id = int(to_account_id)
+        except ValueError:
+            print(colored("Invalid recipient ID. Please enter a numeric value", "yellow"))
+            return False
+                
         if amount <= 0:
             print(colored("Transfer amount must be greater than zero", "yellow"))
             return False
@@ -383,8 +399,12 @@ class Transactions:
                         print(colored(f"Sorry, the account you are trying to transfer to is inactive", "yellow"))
                         return False
                     
-                    beneficiary_balance = float(row["balance_checking"])  # transfer money to checking account
-                    row["balance_checking"] = str(beneficiary_balance + amount)  # apply transfer to beneficiary
+                    if "balance_checking" in row:
+                        beneficiary_balance = float(row["balance_checking"])  # transfer money to checking account
+                        row["balance_checking"] = str(beneficiary_balance + amount)  # apply transfer to beneficiary
+                    elif "balance_savings" in row:
+                        beneficiary_balance = float(row["balance_savings"])  # transfer money to savings account
+                        row["balance_savings"] = str(beneficiary_balance + amount)  # apply transfer to beneficiary
 
                 updated_info.append(row)
 
@@ -403,7 +423,7 @@ class Transactions:
 
         print(colored(f"Transfer successful! ${amount} sent to account {to_account_id}", "light_blue"))
         return True
-        
+
 
 def main():
     #------------------------------------------------------------#
@@ -414,7 +434,6 @@ def main():
         content = csv.reader(csvfile)
         next(content)  # skip header row
         customers_data = [line for line in content]  # store all customers in customers_data list
-        return customers_data
     #------------------------------------------------------------#
     #                       MENU intro
     #------------------------------------------------------------#
@@ -442,7 +461,7 @@ def main():
     elif options_A[menu_entry_index] == options_A[1]:  # login
         customer_ID = input(colored('Please enter your ID: ', 'green'))
         customer_password = input(colored('Please enter your password: ', 'green'))
-        
+        print("Loaded Customer Data:", customers_data)  #DEBUGGING
         # login process
         customer_login_info = None
         for line in customers_data:
@@ -455,13 +474,16 @@ def main():
             # create account obj for the loggedin customer:
             customer_logged_account = Account(
                 int(customer_login_info[0]), # acc id
-                float(customer_login_info[1]), # checking balance
-                float(customer_login_info[2]), # savings
-                int(customer_login_info[3]), # overdrafts count
-                bool(customer_login_info[4]) #is_active
+                float(customer_login_info[4]), # checking balance
+                float(customer_login_info[5]), # savings
+                int(customer_login_info[6]), # overdrafts count
+                bool(customer_login_info[7]) #is_active
             )
-    # elif options_A[menu_entry_index] == options_A[2]:  # exit
-        
+            # create transaction obj for the loggedin customer:
+            transaction = Transactions(
+                        customer_logged_account.account_id,
+                        customer_logged_account.is_active
+            )
             #------------------------------------------------------------#
             #       after successful login, choose an operations
             #------------------------------------------------------------#
@@ -533,31 +555,51 @@ def main():
                             print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
                             print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))
                             amount = input(colored('To transfer money from checking -> savings account,\nplease enter the amount: ', 'green'))
-                            customer_logged_account.transfer_between_accounts(amount, "checking", "savings")
+                            transaction.transfer_between_accounts(amount, "checking", "savings")
 
                         elif options_F[chooseMenu] == options_F[1]:  # From savings -> checking
                             print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))                        
                             print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
                             amount = input(colored('To transfer money from savings -> checking account,\nplease enter the amount: ', 'green'))
-                            customer_logged_account.transfer_between_accounts(amount, "savings", "checking")
+                            transaction.transfer_between_accounts(amount, "savings", "checking")
             #------------------------------------------------------------#
             #              Transfer - To other account ID
             #------------------------------------------------------------#
                     elif options_E[accounts_menu3] == options_E[1]:  # to other account ID
                         print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
-                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))                        
-                        amount = input(colored('Please enter the amount: ', 'green'))
-                        from_account = input(colored("Please enter from which account? 'checking' or 'savings': ", 'green'))
-                        to_account_id = input(colored("Please enter the account ID of the recipient", 'green'))
-                        customer_logged_account.transfer_to_other_user(amount, from_account, to_account_id)
+                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue')) 
+                        print(colored("Which account you want to transfer from?", 'light_blue')) 
+                        options_G = ["Checking account", "Savings account"]
+                        terminal_menu = TerminalMenu(options_G)
+                        transferMenu = terminal_menu.show()
+            #------------------------------------------------------------#
+            #      Transfer - To other account ID - from checking acc
+            #------------------------------------------------------------#                       
+                        if options_G[transferMenu] == options_G[0]:  # checking account
+                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                            amount = input(colored('Please enter the amount: ', 'green'))
+                            to_account_id = input(colored("Please enter the account ID of the recipient", 'green'))
+                            transaction.transfer_to_other_user(amount, "checking", to_account_id)
+            #------------------------------------------------------------#
+            #      Transfer - To other account ID - from savings acc
+            #------------------------------------------------------------#                       
+                        if options_G[transferMenu] == options_G[1]:  # savings account
+                            print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue')) 
+                            amount = input(colored('Please enter the amount: ', 'green'))
+                            to_account_id = input(colored("Please enter the account ID of the recipient", 'green'))
+                            transaction.transfer_to_other_user(amount, "savings", to_account_id)
             #------------------------------------------------------------#
             #                           Logout
             #------------------------------------------------------------#
-                elif options_B[login_menu] == options_B[3]: # logout
+                elif options_B[login_menu] == options_B[3]:  # logout
                     print(colored(f'''\n         🏦 Thank you for using ACME Bank 🏦\n         See you {customer_login_info[1]}!\n''', 'light_blue'))
                     break
         else:
             print(colored("\nSorry, invalid ID or password. Please try again.", "yellow"))
+
+    elif options_A[menu_entry_index] == options_A[2]:  # exit
+        print(colored(f'''\n                     🏦 Thank you for using ACME Bank 🏦''', 'light_blue'))
+        return 
             
 if __name__ == "__main__":
     main()

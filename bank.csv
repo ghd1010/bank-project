@@ -1,10 +1,6 @@
 account_id,first_name,last_name,password,balance_checking,balance_savings,num_of_overdrafts,is_active
-10001,suresh,sigera,juagw362,148.0,10200.0,0,True
-10002,james,taylor,idh36%@#FGd,-95,10000,2,False
+10001,suresh,sigera,juagw362,1000,10000.0,0,True
+10002,james,taylor,idh36%@#FGd,10000,10000,0,True
 10003,melvin,gordon,uYWE732g4ga1,2000,20000,0,True
-10004,stacey,abrams,DEU8_qw3y72$,1990.0,20010.0,0,True
-10005,jake,paul,d^dg23g)@,100402.0,100200.0,0,True
-10006,Haya,Almutairi,password432,-75,0,2,False
-10007,jii,aks,23w2,0,0,0,True
-10008,xfd,dfd,fdf,0,0,0,True
-10009,asasas,asas,wq2w,0,0,0,True
+10004,stacey,abrams,DEU8_qw3y72$,2000,20000,0,True
+10005,jake,paul,d^dg23g)@,100000,100000,0,True
