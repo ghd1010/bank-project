@@ -1,6 +1,8 @@
 import unittest
 # from main import Customer
-from main import Account
+# from main import Account
+from main import Transactions
+
 
 
 # class TestCustomer(unittest.TestCase):
@@ -68,8 +70,22 @@ class TestDeposit(unittest.TestCase):
 #         self.assertEqual(self.test_account_three.balance_checking_withdraw(10), -95)  # balance updated
 #         self.assertEqual(self.test_account_three.balance_checking_withdraw(100), False)  
     
+class TestTransactions(unittest.TestCase):
+    def setUp(self): # create a account object
+
+        self.test_account_one= Transactions(10001)
+        self.test_account_two= Transactions(10006)
+        self.test_account_three= Transactions(10005)
+        self.test_account_four= Transactions(10004)
 
 
+
+    def test_transfer_from_savings_to_checking(self):
+        self.assertEqual(self.test_account_one.transfer_between_accounts(200, "checking", "savings"), True)  # success
+        self.assertEqual(self.test_account_two.transfer_between_accounts(200, "checking", "savings"), False)  # transfer for inactive account
+        self.assertEqual(self.test_account_three.transfer_between_accounts("200", "checking", "savings"), False)  # take amount as string (number)
+        self.assertEqual(self.test_account_three.transfer_between_accounts("Hello", "checking", "savings"), False)  # take amount as string (letters)
+        self.assertEqual(self.test_account_four.transfer_between_accounts(3000, "checking", "savings"), False)  # amount > balance
 
 
 if __name__ == '__main__':
