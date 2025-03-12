@@ -405,142 +405,159 @@ class Transactions:
         return True
         
 
-# def main():
-# #------------------------------------------------------------#
-#         # read the csv file once and store customer data
-# #------------------------------------------------------------#
+def main():
+    #------------------------------------------------------------#
+    #      read the csv file once and store customer data
+    #------------------------------------------------------------#
+    customers_data = []
+    with open(my_csv_file, mode='r') as csvfile:
+        content = csv.reader(csvfile)
+        next(content)  # skip header row
+        customers_data = [line for line in content]  # store all customers in customers_data list
+        return customers_data
+    #------------------------------------------------------------#
+    #                       MENU intro
+    #------------------------------------------------------------#
+    welcome_text = colored('''                         🏦 Welcome to ACME Bank 🏦''', 'green')
+    question_text = colored('''                       What are you looking for today?''', 'light_blue')
 
-#     customers_data = []
-#     with open(my_csv_file, mode='r') as csvfile:
-#         content = csv.reader(csvfile)
-#         next(content)  # skip header row
-#         customers_data = [line for line in content]  # store all customers in customers_data list
-    
-# #------------------------------------------------------------#
-#                         # MENU intro
-# #------------------------------------------------------------#
-#     welcome_text = colored('''                         🏦 Welcome to ACME Bank 🏦''', 'green')
-#     question_text = colored('''                       What are you looking for today?''', 'light_blue')
+    full_text = f"\n{welcome_text}\n{question_text}\n"
 
-#     full_text = f"\n{welcome_text}\n{question_text}\n"
+    print(full_text)
+    #------------------------------------------------------------#
+    #                Sign up - Login options
+    #------------------------------------------------------------#
+    options_A = ["Sign up", "Login", "Exit"]
+    terminal_menu = TerminalMenu(options_A)
+    menu_entry_index = terminal_menu.show()
 
-#     print(full_text)
-# #------------------------------------------------------------#
-#                     # Sign up - Login options
-# #------------------------------------------------------------#
-#     options1 = ["Sign up", "Login"]
-#     terminal_menu = TerminalMenu(options1)
-#     menu_entry_index = terminal_menu.show()
+    if options_A[menu_entry_index] == options_A[0]:  # sign up
+        customer_fname = input(colored('Please enter your first name: ', 'green'))
+        customer_lname = input(colored('Please enter your last name: ', 'green'))
+        customer_password = input(colored('Please enter your password: ', 'green'))
 
-#     if options1[menu_entry_index] == options1[0]: # sign up
-#         customer_fname = input(colored('Please enter your first name: ' ,'green'))
-#         customer_lname = input(colored('Please enter your last name: ' ,'green'))
-#         customer_password= input(colored('Please enter your password: ' ,'green'))
+        customer = Customer(customer_fname, customer_lname, customer_password)
+        customer.add_customer_to_csv()
 
-#         customer = Customer(customer_fname, customer_lname, customer_password)
-#         customer.add_customer_to_csv()
-
-#     elif options1[menu_entry_index] == options1[1]: # login
-#         customer_ID = input(colored('Please enter your ID: ' ,'green'))
-#         customer_password= input(colored('Please enter your password: ' ,'green'))
+    elif options_A[menu_entry_index] == options_A[1]:  # login
+        customer_ID = input(colored('Please enter your ID: ', 'green'))
+        customer_password = input(colored('Please enter your password: ', 'green'))
         
-#         # login process
-#         customer_login_info = None
-#         for line in customers_data:
-#             if line[0] == customer_ID and line[3] == customer_password:
-#                 customer_login_info = line
-#                 break
-#             if customer_login_info:
-#                 print(colored(f'''\n                             Hello, {customer_login_info[1]}!\n''', 'light_blue'))
-#                 # create account obj for the loggedin customer:
-#                 customer_logged_account = Account(
-#                     customer_login_info[0],
-#                     float(customer_login_info[1]),
-#                     float(customer_login_info[2]),
-#                     int(customer_login_info[3]),
-#                     customer_login_info[4]
-#                 )
-#         #------------------------------------------------------------#
-#             # after successful login, choose an operations
-#         #------------------------------------------------------------#
-#                 options2 = ["Withdraw", "Deposit", "Transfer"]
-#                 terminal_menu = TerminalMenu(options2)
-#                 login_menu = terminal_menu.show()
-#         #------------------------------------------------------------#
-#                                 # Withdraw
-#         #------------------------------------------------------------#
-#                 if options2[login_menu] == options2[0]: #for withdraw function
-#                     print('Account:')
-#                     options3 = ["Checking account", "Savings account"]
-#                     terminal_menu = TerminalMenu(options3)
-#                     accounts_menu1 = terminal_menu.show()
-#         #------------------------------------------------------------#
-#                                 # Withdraw - choose acc
-#         #------------------------------------------------------------#
-#                     if options3[accounts_menu1] == options3[0]: # checking account
-#                         print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
-#                         amount = input(colored('Please enter the amount: ','green'))
-#                         try:
-#                             float(amount)
-#                             new_checking_acc_balance = customer_logged_account.balance_checking_withdraw(amount)
-#                             if new_checking_acc_balance != False:
-#                                 print(colored(f"Withdraw successful! New checking account balance: $ {new_checking_acc_balance} $", 'light_blue'))
-#                         except ValueError:
-#                             print(colored("Sorry, invalid input. Please enter a positive number", 'yellow'))
+        # login process
+        customer_login_info = None
+        for line in customers_data:
+            if line[0] == customer_ID and line[3] == customer_password:
+                customer_login_info = line
+                break
+            
+        if customer_login_info:
+            print(colored(f'''\n                             Hello, {customer_login_info[1]}!\n''', 'light_blue'))
+            # create account obj for the loggedin customer:
+            customer_logged_account = Account(
+                int(customer_login_info[0]), # acc id
+                float(customer_login_info[1]), # checking balance
+                float(customer_login_info[2]), # savings
+                int(customer_login_info[3]), # overdrafts count
+                bool(customer_login_info[4]) #is_active
+            )
+    # elif options_A[menu_entry_index] == options_A[2]:  # exit
+        
+            #------------------------------------------------------------#
+            #       after successful login, choose an operations
+            #------------------------------------------------------------#
+            while True:
+                options_B = ["Withdraw", "Deposit", "Transfer", "Logout"]
+                terminal_menu = TerminalMenu(options_B)
+                login_menu = terminal_menu.show()
+            #------------------------------------------------------------#
+            #                         Withdraw
+            #------------------------------------------------------------#
+                if options_B[login_menu] == options_B[0]: # withdraw
+                    print('Account:')
+                    options_C = ["Checking account", "Savings account"]
+                    terminal_menu = TerminalMenu(options_C)
+                    accounts_menu1 = terminal_menu.show()
+            #------------------------------------------------------------#
+            #                  Withdraw - choose acc
+            #------------------------------------------------------------#
+                    if options_C[accounts_menu1] == options_C[0]:  # checking account
+                        print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                        amount = input(colored('Please enter the amount: ', 'green'))
+                        customer_logged_account.balance_checking_withdraw(amount)
 
-#                     elif options3[accounts_menu1] == options3[1]: # savings account
-#                         print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))
-#                         amount = input(colored('Please enter the amount: ','green'))
-#                         try:
-#                             float(amount)
-#                             new_savings_acc_balance = customer_logged_account.balance_savings_withdraw(amount)
-#                             if new_savings_acc_balance != False:
-#                                 print(colored(f"Withdraw successful! New checking account balance: $ {new_savings_acc_balance} $", 'light_blue'))
-#                         except ValueError:
-#                             print(colored("Sorry, invalid input. Please enter a positive number", 'yellow'))
-#         #------------------------------------------------------------#
-#                                 # Deposit
-#         #------------------------------------------------------------#
+                    elif options_C[accounts_menu1] == options_C[1]:  # savings account
+                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))
+                        amount = input(colored('Please enter the amount: ', 'green'))
+                        customer_logged_account.balance_savings_withdraw(amount)
+            #------------------------------------------------------------#
+            #                         Deposit
+            #------------------------------------------------------------#
+                elif options_B[login_menu] == options_B[1]: # deposit
+                    print('Account:')
+                    options_D = ["Checking account", "Savings account"]
+                    terminal_menu = TerminalMenu(options_D)
+                    accounts_menu2 = terminal_menu.show()
+            #------------------------------------------------------------#
+            #                  Deposit - choose acc
+            #------------------------------------------------------------#
+                    if options_D[accounts_menu2] == options_D[0]:  # checking account
+                        print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                        amount = input(colored('Please enter the amount: ', 'green'))
+                        customer_logged_account.balance_checking_deposit(amount)
 
-#                 if options2[login_menu] == options2[1]: #for deposit function
-#                     print('Account:')
-#                     options4 = ["Checking account", "Savings account"]
-#                     terminal_menu = TerminalMenu(options4)
-#                     accounts_menu2 = terminal_menu.show()
-#         #------------------------------------------------------------#
-#                                 # Deposit - choose acc
-#         #------------------------------------------------------------#
-#                     if options4[accounts_menu2] == options4[0]: # checking account
-#                         print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
-#                         amount = input(colored('Please enter the amount: ','green'))
-#                         try:
-#                             float(amount)
-#                             new_checking_acc_balance = customer_logged_account.balance_checking_deposit(amount)
-#                             if new_checking_acc_balance != False:
-#                                 print(colored(f"Deposit successful! New checking account balance: $ {new_checking_acc_balance} $", 'light_blue'))
-#                         except ValueError:
-#                             print(colored("Sorry, invalid input. Please enter a positive number", 'yellow'))
+                    elif options_D[accounts_menu2] == options_D[1]:  # savings account
+                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))
+                        amount = input(colored('Please enter the amount: ', 'green'))
+                        customer_logged_account.balance_savings_deposit(amount)                    
+                    
+            #------------------------------------------------------------#
+            #                          Transfer
+            #------------------------------------------------------------#
+                elif options_B[login_menu] == options_B[2]:
+                    print('Transfer to:')
+                    options_E = ["Between your own accounts", "To other account ID"]
+                    terminal_menu = TerminalMenu(options_E)
+                    accounts_menu3 = terminal_menu.show()
+            #------------------------------------------------------------#
+            #                 Transfer - own accounts
+            #------------------------------------------------------------#
+                    if options_E[accounts_menu3] == options_E[0]:  # between own accounts
+                        print('Choose:')
+                        options_F = ["From checking -> savings", "From savings -> checking"]
+                        terminal_menu = TerminalMenu(options_F)
+                        chooseMenu = terminal_menu.show()
+            #------------------------------------------------------------#
+            #     Transfer - From checking -> savings and vice versa
+            #------------------------------------------------------------#
+                        if options_F[chooseMenu] == options_F[0]:  # From checking -> savings
+                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                            print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))
+                            amount = input(colored('To transfer money from checking -> savings account,\nplease enter the amount: ', 'green'))
+                            customer_logged_account.transfer_between_accounts(amount, "checking", "savings")
 
-#                     elif options4[accounts_menu2] == options4[1]: # savings account
-#                         print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))
-#                         amount = input(colored('Please enter the amount: ','green'))
-#                         try:
-#                             float(amount)
-#                             new_savings_acc_balance = customer_logged_account.balance_savings_deposit(amount)
-#                             if new_savings_acc_balance != False:
-#                                 print(colored(f"Deposit successful! New checking account balance: $ {new_savings_acc_balance} $", 'light_blue'))
-#                         except ValueError:
-#                             print(colored("Sorry, invalid input. Please enter a positive number", 'yellow'))
-
-#         #------------------------------------------------------------#
-#                                 # Transfer
-#         #------------------------------------------------------------#
-#                 elif options2[login_menu] == options2[2]: #for transfer function
-#                     pass
-#                     break
-#             else:
-#                 print(colored("\nSorry, invalid ID or password. Please try again.", "yellow"))
-
-
-# if __name__ == "__main__":
-#     main()
+                        elif options_F[chooseMenu] == options_F[1]:  # From savings -> checking
+                            print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))                        
+                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                            amount = input(colored('To transfer money from savings -> checking account,\nplease enter the amount: ', 'green'))
+                            customer_logged_account.transfer_between_accounts(amount, "savings", "checking")
+            #------------------------------------------------------------#
+            #              Transfer - To other account ID
+            #------------------------------------------------------------#
+                    elif options_E[accounts_menu3] == options_E[1]:  # to other account ID
+                        print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))                        
+                        amount = input(colored('Please enter the amount: ', 'green'))
+                        from_account = input(colored("Please enter from which account? 'checking' or 'savings': ", 'green'))
+                        to_account_id = input(colored("Please enter the account ID of the recipient", 'green'))
+                        customer_logged_account.transfer_to_other_user(amount, from_account, to_account_id)
+            #------------------------------------------------------------#
+            #                           Logout
+            #------------------------------------------------------------#
+                elif options_B[login_menu] == options_B[3]: # logout
+                    print(colored(f'''\n         🏦 Thank you for using ACME Bank 🏦\n         See you {customer_login_info[1]}!\n''', 'light_blue'))
+                    break
+        else:
+            print(colored("\nSorry, invalid ID or password. Please try again.", "yellow"))
+            
+if __name__ == "__main__":
+    main()
