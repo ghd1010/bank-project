@@ -378,9 +378,10 @@ class Transactions:
                 if row["account_id"] == str(self.account_id):  
                     sender_found = True
                     sender_balance = float(row[sender_col])
-                    sender_is_active = row["is_active"] == "True"
-
-                    if not sender_is_active:
+                    sender_is_active = row["is_active"].strip().lower() == "true"
+                    # print(sender_is_active)
+                    
+                    if sender_is_active == False:
                         print(colored(f"Sorry, you can't transfer due to your inactive account", "yellow"))
                         return False
 
@@ -393,18 +394,15 @@ class Transactions:
                 #---------- beneficiary account ----------#
                 if row["account_id"] == str(to_account_id): 
                     beneficiary_found = True
-                    beneficiary_is_active = row["is_active"] == "True"
-                    
-                    if not beneficiary_is_active:
+                    beneficiary_is_active = row["is_active"].strip().lower() == "true"
+                    # print(beneficiary_is_active)
+
+                    if beneficiary_is_active == False:
                         print(colored(f"Sorry, the account you are trying to transfer to is inactive", "yellow"))
                         return False
                     
-                    if "balance_checking" in row:
-                        beneficiary_balance = float(row["balance_checking"])  # transfer money to checking account
-                        row["balance_checking"] = str(beneficiary_balance + amount)  # apply transfer to beneficiary
-                    elif "balance_savings" in row:
-                        beneficiary_balance = float(row["balance_savings"])  # transfer money to savings account
-                        row["balance_savings"] = str(beneficiary_balance + amount)  # apply transfer to beneficiary
+                    beneficiary_balance = float(row["balance_checking"])  # transfer money to checking account
+                    row["balance_checking"] = str(beneficiary_balance + amount)  # apply transfer
 
                 updated_info.append(row)
 
@@ -603,3 +601,6 @@ def main():
             
 if __name__ == "__main__":
     main()
+# if __name__ == "__main__":
+#     test_transaction = Transactions(10001, True)  # Active account
+#     test_transaction.transfer_to_other_user(10, "checking", 10002)

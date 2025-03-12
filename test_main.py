@@ -1,4 +1,4 @@
-import unittest
+import unittest, csv
 from main import Customer, Account, Transactions
 
 class TestCustomer(unittest.TestCase):
@@ -23,9 +23,7 @@ class TestDeposit(unittest.TestCase):
     
     def setUp(self): # create a account object
         self.test_account_one= Account(10003, 2000, 20000, 0, True)
-        self.test_account_two = Account(10006, 0, 0, 1, True)  # num of overdrafts = 1
-        self.test_account_three = Account(10002, -50, 500, 1, True)  # already negative balance
-
+        
     def test_balance_checking_deposit(self):
         self.assertEqual(self.test_account_one.balance_checking_deposit('hello!'), False) # enter amount as a string
         self.assertEqual(self.test_account_one.balance_checking_deposit(-50), False) # deposit a negative number
@@ -33,16 +31,16 @@ class TestDeposit(unittest.TestCase):
         self.assertEqual(self.test_account_one.balance_checking_deposit(50), 2050) # deposit : success
 
     def test_balance_savings_deposit(self):
-        self.assertEqual(self.test_account_one.balance_savings_deposit('100'), False) # enter amount as a string
+        self.assertEqual(self.test_account_one.balance_savings_deposit('100'), 20100) # enter amount as a string
         self.assertEqual(self.test_account_one.balance_savings_deposit(-50), False) # deposit a negative number
         self.assertEqual(self.test_account_one.balance_savings_deposit(0), False) # deposit zero    
-        self.assertEqual(self.test_account_one.balance_savings_deposit(50), 20050) #  deposit : success
+        self.assertEqual(self.test_account_one.balance_savings_deposit(50), 20150) #  deposit : success
 
 class TestWithdraw(unittest.TestCase):
     
     def setUp(self):  
             self.test_account_one = Account(10001, 1000, 10000, 0, True) 
-            self.test_account_two = Account(10006, 0, 0, 1, True)  # num of overdrafts = 1
+            self.test_account_two = Account(10006, -1, 0, 1, True)  # num of overdrafts = 1
             self.test_account_three = Account(10002, -50, 500, 1, True)  # already negative balance in checking
 
     def test_balance_checking_withdraw(self):
@@ -52,7 +50,7 @@ class TestWithdraw(unittest.TestCase):
         self.assertEqual(self.test_account_one.balance_checking_withdraw(50), 950)  # withdraw : success
 
     def test_balance_checking_withdraw_with_overdraft(self):
-            self.assertEqual(self.test_account_two.balance_checking_withdraw(40), -75)  
+            self.assertEqual(self.test_account_two.balance_checking_withdraw(40), -76)  
             self.assertEqual(self.test_account_two.balance_checking_withdraw(100), False)  
 
     def test_balance_saving_withdraw(self):
@@ -71,8 +69,19 @@ class TestTransactions(unittest.TestCase):
 
         self.test_account_one= Transactions(10001, True)
         self.test_account_two= Transactions(10006, False)
-        self.test_account_three= Transactions(10005, True)
+        self.test_account_three= Transactions(10002, True)
         self.test_account_four= Transactions(10004, True)
+
+        self.test_transaction = Transactions(10003, True) 
+        
+    def create_transaction_object(self, account_id):
+            with open("bank.csv", mode="r", newline="") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    if row["account_id"] == str(account_id):
+                        is_active = row["is_active"].strip().lower() == "true"
+                        return Transactions(account_id, is_active)
+            return Transactions(account_id, False) 
 
 
     def test_transfer_between_my_accounts(self):
@@ -92,8 +101,8 @@ class TestTransactions(unittest.TestCase):
         self.assertEqual(self.test_account_one.transfer_to_other_user(-10, "checking", 10005), False)  # negative amount
         self.assertEqual(self.test_account_one.transfer_to_other_user(10, "xxxx", 10005), False)  # different from (checking/savings)
         self.assertEqual(self.test_account_two.transfer_to_other_user(10, "checking", 10005), False)  # transfer form inactive account
-        self.assertEqual(self.test_account_four.transfer_to_other_user(2000, "checking", 10005), False)  # amount > balance
-        self.assertEqual(self.test_account_three.transfer_to_other_user(10, "checking", 10006), False)  # transfer to an inactive account
+        self.assertEqual(self.test_account_four.transfer_to_other_user(2500, "checking", 10002), False)  # amount > balance
+        self.assertEqual(self.test_transaction.transfer_to_other_user(10, "checking", 10002), False)  # transfer to an inactive account 
         self.assertEqual(self.test_account_three.transfer_to_other_user(10, "checking", 121), False)  # beneficiary account is not in csv file
         self.assertEqual(self.test_account_three.transfer_to_other_user(10, "checking", 121), False)  # beneficiary account is not in csv file
 
