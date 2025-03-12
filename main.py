@@ -115,7 +115,7 @@ class Account:
         self.num_of_overdrafts = num_of_overdrafts
         self.is_active = is_active
 
-    def update_balance(self, account_id, new_balance, account_type):
+    def update_balance(self, account_id, new_balance, account_type, num_of_overdrafts, is_active):
         
         updated_info = []
         
@@ -132,7 +132,9 @@ class Account:
             for row in reader:
                 #by default, csv.DictReader reads all values as strings
                 if row["account_id"] == str(account_id):  # check account
-                    row[balance_col] = str(new_balance) #update balance
+                    row[balance_col] = str(new_balance) # update balance
+                    row["num_of_overdrafts"] = str(num_of_overdrafts) # update num_of_overdrafts
+                    row["is_active"] = str(is_active) # update is_active
                 updated_info.append(row)
 
         # write updated data to csv file
@@ -154,8 +156,8 @@ class Account:
             return False
         else:
             self.balance_checking += amount
-            self.update_balance(self.account_id, self.balance_checking, "checking")  # write to csv file
-            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
+            self.update_balance(self.account_id, self.balance_checking, "checking", self.num_of_overdrafts, self.is_active)  # write to csv file
+            print(colored(f"Deposit successful! New balance: ${self.balance_checking}", "light_blue"))
             return self.balance_checking
     
     def balance_savings_deposit(self, amount):
@@ -170,7 +172,7 @@ class Account:
             return False
         else:
             self.balance_savings += amount
-            self.update_balance(self.account_id, self.balance_savings, "savings")  # write to csv file
+            self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
             print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
             return self.balance_savings
     
@@ -192,7 +194,7 @@ class Account:
         # successful witdrawal
         if self.balance_checking >= amount:
             self.balance_checking -= amount
-            self.update_balance(self.account_id, self.balance_checking, "checking")  # write to csv file
+            self.update_balance(self.account_id, self.balance_checking, "checking" ,self.num_of_overdrafts, self.is_active)  # write to csv file
             print(colored(f"Withdrawal successful! New balance: ${self.balance_checking}", "light_blue"))
             return self.balance_checking
             
@@ -209,55 +211,57 @@ class Account:
         # apply protection overdraft
         self.balance_checking -= (amount + overdraft_amount)
         self.num_of_overdrafts += 1
-        print(colored(f'Overdraft! Charged $35 fee. new balance: ${self.balance_checking}', 'light_blue'))
+        print(colored(f'Overdraft! Charged $35 fee, new balance: ${self.balance_checking}', 'light_blue'))
                 
         # deactivate account after applying 2 overdrafts
         if self.num_of_overdrafts >= 2:
             self.is_active = False
             print(colored('Account deactivated.', 'yellow'))
             
-        self.update_balance(self.account_id, self.balance_checking, "checking")  # write to csv file
+        self.update_balance(self.account_id, self.balance_checking, "checking" ,self.num_of_overdrafts, self.is_active)  # write to csv file
         return self.balance_checking
 
-    # def balance_savings_withdraw(self, amount):
-    #     overdraft_amount = 35
-    #     # make sure that the amount is not zero or negative
-    #     if amount < 0:
-    #         print(colored('Sorry, you can\'t withdraw a negative number. Please ensure it is a positive non-zero number'), 'yellow')
-    #         return False
-    #     if amount == 0:
-    #         print(colored('Sorry, you can\'t withdraw zero. Please ensure it is a positive non-zero number'), 'yellow')
-    #         return False
+    def balance_savings_withdraw(self, amount):
+        overdraft_amount = 35
+        # make sure that the amount is not zero or negative
+        if amount < 0:
+            print(colored('Sorry, you can\'t withdraw a negative number. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
+        if amount == 0:
+            print(colored('Sorry, you can\'t withdraw zero. Please ensure it is a positive non-zero number'), 'yellow')
+            return False
         
-    #     # check on the balance, if the balance > 0 :
-    #     # successful witdrawal
-    #     if self.balance_savings >= amount:
-    #         self.balance_savings -= amount
-    #         print(colored(f"Withdrawal successful! New balance: ${self.balance_savings}", "light_blue"))
-    #         return self.balance_savings
+        # check on the balance, if the balance > 0 :
+        # successful witdrawal
+        if self.balance_savings >= amount:
+            self.balance_savings -= amount
+            self.update_balance(self.account_id, self.balance_checking, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
+            print(colored(f"Withdrawal successful! New balance: ${self.balance_savings}", "light_blue"))
+            return self.balance_savings
             
         
-    #     if self.balance_savings < 0 and amount > 100:
-    #         # cannot withdraw more than 100$
-    #         print(colored('Withdrawal denied: Cannot withdraw more than $100 when account is negative', 'yellow'))
-    #         return False
+        if self.balance_savings < 0 and amount > 100:
+            # cannot withdraw more than 100$
+            print(colored('Withdrawal denied: Cannot withdraw more than $100 when account is negative', 'yellow'))
+            return False
             
-    #     # the account cannot have a resulting balance of less than -$100 (range)
-    #     if(self.balance_savings - amount - overdraft_amount) < -100:
-    #         print(colored("Withdrawal denied: Overdraft limit of -$100", 'yellow'))
-    #         return False
+        # the account cannot have a resulting balance of less than -$100 (range)
+        if(self.balance_savings - amount - overdraft_amount) < -100:
+            print(colored("Withdrawal denied: Overdraft limit of -$100", 'yellow'))
+            return False
                 
-    #     # apply protection overdraft
-    #     self.balance_savings -= (amount + overdraft_amount)
-    #     self.num_of_overdrafts += 1
-    #     print(colored(f'Overdraft! Charged $35 fee. new balance: ${self.balance_savings}', 'light_blue'))
+        # apply protection overdraft
+        self.balance_savings -= (amount + overdraft_amount)
+        self.num_of_overdrafts += 1
+        print(colored(f'Overdraft! Charged $35 fee, new balance: ${self.balance_savings}', 'light_blue'))
                 
-    #     # deactivate account after applying 2 overdrafts
-    #     if self.num_of_overdrafts >= 2:
-    #         self.is_active = False
-    #         print(colored('Account deactivated.', 'yellow'))
+        # deactivate account after applying 2 overdrafts
+        if self.num_of_overdrafts >= 2:
+            self.is_active = False
+            print(colored('Account deactivated.', 'yellow'))
 
-    #     return self.balance_savings
+        self.update_balance(self.account_id, self.balance_checking, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
+        return self.balance_savings
 
 # class Transactions:
     
