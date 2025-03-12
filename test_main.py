@@ -21,13 +21,12 @@ from main import Account
 #         self.assertEqual(self.test_customer_six.add_customer_to_csv(), True)  # test adding a valid customer
 
 
-class TestAccount(unittest.TestCase):
+class TestDeposit(unittest.TestCase):
     
     def setUp(self): # create a account object
         self.test_account_one= Account(10003, 2000, 20000, 0, True)
         self.test_account_two = Account(10006, 0, 0, 1, True)  # num of overdrafts = 1
         self.test_account_three = Account(10002, -50, 500, 1, True)  # already negative balance
-        # self.test_account_two= Account(10006, 0, 0, 0, True)
 
     def test_balance_checking_deposit(self):
         self.assertEqual(self.test_account_one.balance_checking_deposit('hello!'), False) # enter amount as a string
@@ -35,10 +34,11 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(self.test_account_one.balance_checking_deposit(0), False) # deposit zero in checking account
         self.assertEqual(self.test_account_one.balance_checking_deposit(50), 2050) # deposit from checking account
 
-#     def test_balance_savings_deposit(self):
-#         self.assertEqual(self.test_account_one.balance_savings_deposit(50), 20050) # deposit from savings account
-#         self.assertEqual(self.test_account_one.balance_savings_deposit(-50), False) # deposit a negative number from savings account
-#         self.assertEqual(self.test_account_one.balance_savings_deposit(0), False) # deposit zero in savings account       
+    def test_balance_savings_deposit(self):
+        self.assertEqual(self.test_account_one.balance_savings_deposit('100'), False) # enter amount as a string
+        self.assertEqual(self.test_account_one.balance_savings_deposit(-50), False) # deposit a negative number from savings account
+        self.assertEqual(self.test_account_one.balance_savings_deposit(0), False) # deposit zero in savings account       
+        self.assertEqual(self.test_account_one.balance_savings_deposit(50), 20050) # deposit from savings account
 
 #     def test_balance_checking_withdraw(self):
 #         self.assertEqual(self.test_account_one.balance_checking_withdraw(50), 1950) # withdraw from checking account

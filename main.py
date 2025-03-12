@@ -114,24 +114,33 @@ class Account:
         self.balance_savings = balance_savings
         self.num_of_overdrafts = num_of_overdrafts
         self.is_active = is_active
+
+    def update_balance(self, account_id, new_balance, account_type):
         
-    def update_balance_checking(self, account_id, new_balance):
         updated_info = []
+        
+        # assign the correct balance to the correct account type
+        if account_type == "checking":
+            balance_col = "balance_checking"
+        elif account_type == "savings":
+            balance_col = "balance_savings"
 
         # read the existing data and update the balance for the correct account
         with open(my_csv_file, mode="r", newline="") as file:
-            reader = csv.DictReader(file) #got info from: https://docs.python.org/3/library/csv.html
+            reader = csv.DictReader(file)  #got info from: https://docs.python.org/3/library/csv.html
             fieldnames = reader.fieldnames
             for row in reader:
-                if row["account_id"] == str(account_id):  #by default, csv.DictReader reads all values as strings.
-                    row["balance_checking"] = str(new_balance)  #update balance
+                #by default, csv.DictReader reads all values as strings
+                if row["account_id"] == str(account_id):  # check account
+                    row[balance_col] = str(new_balance) #update balance
                 updated_info.append(row)
 
-        # Write the updated data back to the csv file
+        # write updated data to csv file
         with open(my_csv_file, mode="w", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
-            writer.writerows(updated_info)    
+            writer.writerows(updated_info)
+            
     
     def balance_checking_deposit(self, amount):
         if type(amount) == str:
@@ -145,20 +154,25 @@ class Account:
             return False
         else:
             self.balance_checking += amount
-            self.update_balance_checking(self.account_id, self.balance_checking)  # write to csv file
+            self.update_balance(self.account_id, self.balance_checking, "checking")  # write to csv file
+            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
             return self.balance_checking
     
-#     def balance_savings_deposit(self, amount):
-#         if amount < 0:
-#             print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number', 'yellow'))
-#             return False
-#         elif amount == 0:
-#             print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
-#             return False
-#         else:
-#             self.balance_savings += amount
-#             print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
-#             return self.balance_savings
+    def balance_savings_deposit(self, amount):
+        if type(amount) == str:
+            print(colored('Sorry, amount should be a number.', 'yellow'))
+            return False
+        if amount < 0:
+            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number', 'yellow'))
+            return False
+        elif amount == 0:
+            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
+            return False
+        else:
+            self.balance_savings += amount
+            self.update_balance(self.account_id, self.balance_savings, "savings")  # write to csv file
+            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
+            return self.balance_savings
     
 #     def balance_checking_withdraw(self, amount):
         
