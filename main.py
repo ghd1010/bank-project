@@ -131,9 +131,9 @@ class Account:
             for row in reader:
                 #by default, csv.DictReader reads all values as strings
                 if row["account_id"] == str(account_id):  # check account
-                    row[balance_col] = str(new_balance) # update balance
-                    row["num_of_overdrafts"] = str(num_of_overdrafts) # update num_of_overdrafts
-                    row["is_active"] = str(is_active) # update is_active
+                    row[balance_col] = str(new_balance) # stotr balance
+                    row["num_of_overdrafts"] = str(num_of_overdrafts) # stotr num_of_overdrafts
+                    row["is_active"] = str(is_active).lower() # stotr is_active
                 updated_info.append(row)
 
         # write updated data to csv file
@@ -280,7 +280,7 @@ class Account:
         # successful witdrawal
         if self.balance_savings >= amount:
             self.balance_savings -= amount
-            self.update_balance(self.account_id, self.balance_checking, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
+            self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
             print(colored(f"Withdrawal successful! New balance: ${self.balance_savings}", "light_blue"))
             return self.balance_savings
             
