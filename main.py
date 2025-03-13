@@ -155,12 +155,34 @@ class Account:
         elif amount == 0:
             print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
             return False
-        else:
-            self.balance_checking += amount
-            self.update_balance(self.account_id, self.balance_checking, "checking", self.num_of_overdrafts, self.is_active)  # write to csv file
-            print(colored(f"Deposit successful! New balance: ${self.balance_checking}", "light_blue"))
-            return self.balance_checking
         
+        if not self.is_active:
+            self.reactivate_account(amount)
+            return self.balance_savings
+        
+        self.balance_checking += amount
+        self.update_balance(self.account_id, self.balance_checking, "checking", self.num_of_overdrafts, self.is_active)  # write to csv file
+        print(colored(f"Deposit successful! New balance: ${self.balance_checking}", "light_blue"))
+        return self.balance_checking
+        
+    def balance_savings_deposit(self, amount):
+        try:
+            amount = float(amount)
+        except ValueError:
+            print(colored("Sorry, invalid amount. Please enter a numeric value.", "yellow"))
+            return False
+        if amount < 0:
+            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number', 'yellow'))
+            return False
+        elif amount == 0:
+            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
+            return False
+        else:
+            self.balance_savings += amount
+            self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
+            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
+            return self.balance_savings
+
     def reactivate_account(self, deposit_amount):
         overdraft_amount = 35 
         activate_total = abs(self.balance_checking) + overdraft_amount # total amount needed to reactivate
@@ -174,24 +196,7 @@ class Account:
         else:
             print(colored(f"Sorry, your account is still deactivated. You need at least ${activate_total} to bring the account current.", "yellow"))
     
-    def balance_savings_deposit(self, amount):
-        try:
-            amount = float(amount)
-        except ValueError:
-            print(colored("Sorry, invalid amount. Please enter a numeric value.", "yellow"))
-            return False
-        if amount < 0:
-            print(colored('Sorry, you can\'t deposit a negative number. Please ensure it is a positive non-zero number', 'yellow'))
-            return False
-        elif amount == 0:
-            print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
-            return False
-            
-        self.balance_savings += amount
-        self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
-        print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
-        return self.balance_savings
-    
+
     def balance_checking_withdraw(self, amount):
         overdraft_amount = 35
         try:
@@ -515,12 +520,12 @@ def main():
             #                  Withdraw - choose acc
             #------------------------------------------------------------#
                     if options_C[accounts_menu1] == options_C[0]:  # checking account
-                        print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                        print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking}", 'light_blue'))
                         amount = input(colored('Please enter the amount: ', 'green'))
                         customer_logged_account.balance_checking_withdraw(amount)
 
                     elif options_C[accounts_menu1] == options_C[1]:  # savings account
-                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))
+                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings}", 'light_blue'))
                         amount = input(colored('Please enter the amount: ', 'green'))
                         customer_logged_account.balance_savings_withdraw(amount)
             #------------------------------------------------------------#
@@ -564,22 +569,22 @@ def main():
             #     Transfer - From checking -> savings and vice versa
             #------------------------------------------------------------#
                         if options_F[chooseMenu] == options_F[0]:  # From checking -> savings
-                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
-                            print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))
+                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking}", 'light_blue'))
+                            print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings}", 'light_blue'))
                             amount = input(colored('To transfer money from checking -> savings account,\nplease enter the amount: ', 'green'))
                             transaction.transfer_between_accounts(amount, "checking", "savings")
 
                         elif options_F[chooseMenu] == options_F[1]:  # From savings -> checking
-                            print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue'))                        
-                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                            print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings}", 'light_blue'))                        
+                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking}", 'light_blue'))
                             amount = input(colored('To transfer money from savings -> checking account,\nplease enter the amount: ', 'green'))
                             transaction.transfer_between_accounts(amount, "savings", "checking")
             #------------------------------------------------------------#
             #              Transfer - To other account ID
             #------------------------------------------------------------#
                     elif options_E[accounts_menu3] == options_E[1]:  # to other account ID
-                        print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
-                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue')) 
+                        print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking}", 'light_blue'))
+                        print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings}", 'light_blue')) 
                         print(colored("Which account you want to transfer from?", 'light_blue')) 
                         options_G = ["Checking account", "Savings account"]
                         terminal_menu = TerminalMenu(options_G)
@@ -588,7 +593,7 @@ def main():
             #      Transfer - To other account ID - from checking acc
             #------------------------------------------------------------#                       
                         if options_G[transferMenu] == options_G[0]:  # checking account
-                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking} $", 'light_blue'))
+                            print(colored(f"Balance of your checking account is = $ {customer_logged_account.balance_checking}", 'light_blue'))
                             amount = input(colored('Please enter the amount: ', 'green'))
                             to_account_id = input(colored("Please enter the account ID of the recipient", 'green'))
                             transaction.transfer_to_other_user(amount, "checking", to_account_id)
