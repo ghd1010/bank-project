@@ -555,7 +555,7 @@ def main():
             #                  Deposit - choose acc
             #------------------------------------------------------------#
                     if options_D[accounts_menu2] == options_D[0]:  # checking account
-                        print(colored(f"Balance of your checking account is = $ customer_logged_account.balance_checking} $", 'light_blue'))
+                        print(colored(f"Balance of your checking account is = ${customer_logged_account.balance_checking} $", 'light_blue'))
                         amount = input(colored('Please enter the amount: ', 'green'))
                         customer_logged_account.balance_checking_deposit(amount)
 
