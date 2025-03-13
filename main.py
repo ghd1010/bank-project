@@ -160,6 +160,19 @@ class Account:
             self.update_balance(self.account_id, self.balance_checking, "checking", self.num_of_overdrafts, self.is_active)  # write to csv file
             print(colored(f"Deposit successful! New balance: ${self.balance_checking}", "light_blue"))
             return self.balance_checking
+        
+    def reactivate_account(self, deposit_amount):
+        overdraft_amount = 35 
+        activate_total = abs(self.balance_checking) + overdraft_amount # total amount needed to reactivate
+
+        if deposit_amount >= activate_total:
+            self.balance_checking += deposit_amount  
+            self.num_of_overdrafts = 0
+            self.is_active = True 
+            self.update_balance(self.account_id, self.balance_checking, "checking", self.num_of_overdrafts, self.is_active)
+            print(colored(f"Account reactivated! New balance: ${self.balance_checking}", "light_blue"))
+        else:
+            print(colored(f"Sorry, your account is still deactivated. You need at least ${activate_total} to bring the account current.", "yellow"))
     
     def balance_savings_deposit(self, amount):
         try:
@@ -173,11 +186,11 @@ class Account:
         elif amount == 0:
             print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
             return False
-        else:
-            self.balance_savings += amount
-            self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
-            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
-            return self.balance_savings
+            
+        self.balance_savings += amount
+        self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
+        print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
+        return self.balance_savings
     
     def balance_checking_withdraw(self, amount):
         overdraft_amount = 35
@@ -271,6 +284,8 @@ class Account:
 
         self.update_balance(self.account_id, self.balance_checking, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
         return self.balance_savings
+    
+
 
 class Transactions:
     
