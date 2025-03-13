@@ -180,7 +180,6 @@ class Account:
             return self.balance_savings
     
     def balance_checking_withdraw(self, amount):
-        
         overdraft_amount = 35
         try:
             amount = float(amount)
@@ -459,7 +458,7 @@ def main():
     elif options_A[menu_entry_index] == options_A[1]:  # login
         customer_ID = input(colored('Please enter your ID: ', 'green'))
         customer_password = input(colored('Please enter your password: ', 'green'))
-        print("Loaded Customer Data:", customers_data)  #DEBUGGING
+        # print("Loaded Customer Data:", customers_data)  #DEBUGGING
         # login process
         customer_login_info = None
         for line in customers_data:
@@ -584,13 +583,13 @@ def main():
                         if options_G[transferMenu] == options_G[1]:  # savings account
                             print(colored(f"Balance of your savings account is = $ {customer_logged_account.balance_savings} $", 'light_blue')) 
                             amount = input(colored('Please enter the amount: ', 'green'))
-                            to_account_id = input(colored("Please enter the account ID of the recipient", 'green'))
+                            to_account_id = input(colored("Please enter the account ID of the recipient: ", 'green'))
                             transaction.transfer_to_other_user(amount, "savings", to_account_id)
             #------------------------------------------------------------#
             #                           Logout
             #------------------------------------------------------------#
                 elif options_B[login_menu] == options_B[3]:  # logout
-                    print(colored(f'''\n         🏦 Thank you for using ACME Bank 🏦\n         See you {customer_login_info[1]}!\n''', 'light_blue'))
+                    print(colored(f'''\n         🏦 Thank you for using ACME Bank 🏦\n                See you {customer_login_info[1]}!\n''', 'light_blue'))
                     break
         else:
             print(colored("\nSorry, invalid ID or password. Please try again.", "yellow"))

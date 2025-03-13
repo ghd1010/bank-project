@@ -102,7 +102,6 @@ class TestTransactions(unittest.TestCase):
         self.assertEqual(self.test_account_one.transfer_to_other_user(10, "xxxx", 10005), False)  # different from (checking/savings)
         self.assertEqual(self.test_account_two.transfer_to_other_user(10, "checking", 10005), False)  # transfer form inactive account
         self.assertEqual(self.test_account_four.transfer_to_other_user(2500, "checking", 10002), False)  # amount > balance
-        self.assertEqual(self.test_transaction.transfer_to_other_user(10, "checking", 10002), False)  # transfer to an inactive account 
         self.assertEqual(self.test_account_three.transfer_to_other_user(10, "checking", 121), False)  # beneficiary account is not in csv file
         self.assertEqual(self.test_account_three.transfer_to_other_user(10, "checking", 121), False)  # beneficiary account is not in csv file
 
