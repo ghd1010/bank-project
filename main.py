@@ -305,7 +305,7 @@ class Account:
             self.is_active = False
             print(colored('Account deactivated.', 'yellow'))
 
-        self.update_balance(self.account_id, self.balance_checking, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
+        self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
         return self.balance_savings
 
 class Transactions:
@@ -373,20 +373,19 @@ class Transactions:
             return True
     
     def transfer_to_other_user(self, amount, from_account, to_account_id):
-
         try:
             amount = float(amount)
+            if amount <= 0:
+                print(colored("Transfer amount must be greater than zero", "yellow"))
+                return False
         except ValueError:
             print(colored("Invalid amount. Please enter a numeric value", "yellow"))
             return False
+        
         try:
             to_account_id = int(to_account_id)
         except ValueError:
             print(colored("Invalid recipient ID. Please enter a numeric value", "yellow"))
-            return False
-                
-        if amount <= 0:
-            print(colored("Transfer amount must be greater than zero", "yellow"))
             return False
         
         if from_account == "checking":
@@ -422,8 +421,6 @@ class Transactions:
                     if sender_balance < amount:
                         print(colored(f"Sorry, ${amount} is more than the balance of the account", "yellow"))
                         return False
-
-                    row[sender_col] = str(sender_balance - amount) # apply the transfer
                     
                 #---------- beneficiary account ----------#
                 if row["account_id"] == str(to_account_id): 
@@ -439,6 +436,7 @@ class Transactions:
                     row["balance_checking"] = str(beneficiary_balance + amount)  # apply transfer
 
                 updated_info.append(row)
+        # ---------- check if accounts exist before writing to csv ----------#
 
         if not sender_found:
             print(colored("Sender account not found", "yellow"))
@@ -447,6 +445,14 @@ class Transactions:
         if not beneficiary_found:
             print(colored("Beneficiary account not found", "yellow"))
             return False
+        
+        # ---------- apply deduction from sender account ----------#
+        
+        for row in updated_info:
+            if row["account_id"] == str(self.account_id):
+                row[sender_col] = str(sender_balance - amount)  
+                
+        # ---------- write updated data to csv file ----------#
 
         with open(my_csv_file, mode="w", newline="") as file: # write the updated info
             writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -610,7 +616,7 @@ def main():
                         if options_G[transferMenu] == options_G[0]:  # checking account
                             print(colored(f"Balance of your checking account is = ${customer_logged_account.balance_checking}", 'light_blue'))
                             amount = input(colored('Please enter the amount: ', 'green'))
-                            to_account_id = input(colored("Please enter the account ID of the recipient", 'green'))
+                            to_account_id = input(colored("Please enter the account ID of the recipient: ", 'green'))
                             transaction.transfer_to_other_user(amount, "checking", to_account_id)
             #------------------------------------------------------------#
             #      Transfer - To other account ID - from savings acc
