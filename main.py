@@ -158,7 +158,7 @@ class Account:
         
         if not self.is_active:
             self.reactivate_account(amount)
-            return self.balance_savings
+            return self.balance_checking
         
         self.balance_checking += amount
         self.update_balance(self.account_id, self.balance_checking, "checking", self.num_of_overdrafts, self.is_active)  # write to csv file
@@ -177,11 +177,15 @@ class Account:
         elif amount == 0:
             print(colored('Sorry, you can\'t deposit zero. Please ensure it is a positive non-zero number', 'yellow'))
             return False
-        else:
-            self.balance_savings += amount
-            self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
-            print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
+        
+        if not self.is_active:
+            self.reactivate_account(amount)
             return self.balance_savings
+
+        self.balance_savings += amount
+        self.update_balance(self.account_id, self.balance_savings, "savings", self.num_of_overdrafts, self.is_active)  # write to csv file
+        print(colored(f"Deposit successful! New balance: ${self.balance_savings}", "light_blue"))
+        return self.balance_savings
 
     def reactivate_account(self, deposit_amount):
         overdraft_amount = 35 
